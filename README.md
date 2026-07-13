@@ -2,12 +2,12 @@
 
 An AI-powered farm advisory platform that gives farmers crop, soil, pest, and weather recommendations through a multilingual chatbot.
 
-Stack
+##Stack
 
 LayerChoiceCrop recommendationRandom ForestSoil analysisXGBoostPest / disease detectionCNN (image classification)Weather forecastingLSTM (time-series)ChatbotRAG pipeline + Claude API (multilingual)Weather dataOpenWeatherMap API (live)BackendNode.jsFrontendHTML / CSS / JavaScriptAuthSession-based login/signup
 
 
-Run
+##Run
 
 bashgit clone https://github.com/<your-username>/agromind.git
 cd agromind/backend
@@ -17,7 +17,7 @@ npm start
 
 Open frontend/index.html in a browser (or serve frontend/ with a static server / Live Server).
 
-.env
+##.env
 
 PORT=5000
 OPENWEATHER_API_KEY=your_openweathermap_api_key
@@ -25,7 +25,7 @@ CLAUDE_API_KEY=your_claude_api_key
 DB_URI=your_database_connection_string
 JWT_SECRET=your_jwt_secret
 
-Design notes
+##Design notes
 
 
 Four independent models, one dashboard. Crop, soil, pest, and weather each use the model best suited to their data shape — tabular (Random Forest, XGBoost), image (CNN), and sequential (LSTM) — rather than forcing one architecture to cover all four.
