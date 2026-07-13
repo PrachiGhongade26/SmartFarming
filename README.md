@@ -1,4 +1,4 @@
-AgroMind — Smart Farming Assistant
+##AgroMind — Smart Farming Assistant
 
 An AI-powered farm advisory platform that gives farmers crop, soil, pest, and weather recommendations through a multilingual chatbot.
 
