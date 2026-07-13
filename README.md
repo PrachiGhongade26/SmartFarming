@@ -6,31 +6,6 @@ Stack
 
 LayerChoiceCrop recommendationRandom ForestSoil analysisXGBoostPest / disease detectionCNN (image classification)Weather forecastingLSTM (time-series)ChatbotRAG pipeline + Claude API (multilingual)Weather dataOpenWeatherMap API (live)BackendNode.jsFrontendHTML / CSS / JavaScriptAuthSession-based login/signup
 
-Project layout
-
-.
-├── frontend/
-│   ├── index.html               # landing page
-│   ├── login.html / signup.html # auth pages
-│   ├── dashboard.html           # AI insight cards (crop/soil/pest/weather)
-│   ├── css/
-│   └── js/
-├── backend/
-│   ├── server.js                # Express entrypoint
-│   ├── routes/                  # API route definitions
-│   ├── controllers/             # request handlers
-│   └── models/                  # DB schemas (users, queries, history)
-├── ml-models/
-│   ├── crop_recommendation_rf.pkl
-│   ├── soil_analysis_xgb.pkl
-│   ├── pest_detection_cnn.h5
-│   └── weather_forecast_lstm.h5
-├── chatbot/
-│   ├── rag_pipeline.py          # retrieval + context assembly
-│   └── claude_api_integration.py
-├── .env.example
-├── package.json
-└── README.md
 
 Run
 
