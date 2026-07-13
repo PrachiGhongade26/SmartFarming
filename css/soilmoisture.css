@@ -1,0 +1,200 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* BACKGROUND */
+body {
+    background: url("/img/soilmoisture2.jpg") no-repeat center/cover;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* OVERLAY */
+body::before {
+    content: "";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: -1;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 60px;
+    background: #0f7b5f;
+    color: white;
+}
+
+.navbar a {
+    margin: 0 15px;
+    color: white;
+    text-decoration: none;
+}
+
+.signup {
+    background: #f4a100;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+}
+
+/* STATS */
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px;
+}
+
+.card {
+    background: rgba(98, 95, 95, 0.7);
+    padding: 20px;
+    width: 250px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.low {
+    color: rgb(131, 2, 2);
+}
+
+/* MAIN */
+.main {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    flex: 1;
+}
+
+.left {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* BOX */
+.box {
+    background: rgba(73, 72, 72, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* GRAPH */
+#chart {
+    width: 100% !important;
+    height: 300px !important;
+}
+
+/* LEGEND */
+.legend {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.dark { color: rgba(6, 32, 32, 0.9); }
+.medium { color: rgba(11, 110, 84, 0.9); }
+.light { color: rgba(19, 155, 128, 0.9); }
+
+/* STATUS */
+.status {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* FIELD CONDITIONS */
+.field-box h2 {
+    color: rgb(241, 238, 238);
+    margin-bottom: 15px;
+}
+
+
+.field-box {
+    max-width: 500px;
+}
+
+.field-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.field-item img {
+    width: 40px;
+}
+
+.field-item .title {
+    color: black;
+    font-weight: 600;
+}
+
+.field-item .sub {
+    color: #cfc5c5;
+    font-size: 14px;
+}
+
+.field-box hr {
+    border: none;
+    border-top: 1px solid #000;
+    margin: 10px 0;
+}
+
+/* TIPS */
+.tips-container {
+    display: flex;
+    gap: 10px;
+}
+
+.tip-card {
+    flex: 1;
+    background: rgba(88, 87, 87, 0.7);
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.tip-card img {
+    width: 40px;
+    margin-bottom: 5px;
+}
+
+/* BUTTONS */
+.buttons {
+    text-align: center;
+    margin: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background: #0e9d6d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 15px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Crop Suggestion</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">🌿 SmartFarming</div>
+  <ul>
+    <li>Home</li>
+    <li>About</li>
+    <li>Services</li>
+    <li>Contact</li>
+  </ul>
+  <button class="dashboard-btn">Dashboard</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <h1><span>AI Crop</span> Suggestion</h1>
+    <p>Get the best crops to grow on your farm 🌾</p>
+  </div>
+
+  <div class="form-card">
+    <h3>Enter Your Farm Details</h3>
+
+    <select id="soil">
+      <option value="">Soil Type</option>
+      <option>Clay</option>
+      <option>Sandy</option>
+      <option>Loamy</option>
+    </select>
+
+    <input type="number" id="temp" placeholder="Temperature (°C)">
+    <input type="number" id="humidity" placeholder="Humidity (%)">
+    <input type="number" id="rainfall" placeholder="Rainfall (mm)">
+
+    <button onclick="getCrop()">Get Crop Suggestions</button>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <h2>How It Works?</h2>
+  <div class="steps">
+    <div class="step">📥<p>Input Data</p></div>
+    <div class="step">🤖<p>AI Analysis</p></div>
+    <div class="step">🌱<p>Get Results</p></div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="results">
+  <h2>Recommended Crops</h2>
+  <div id="cropCards" class="cards"></div>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>

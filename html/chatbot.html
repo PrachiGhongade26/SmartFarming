@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AgriBot Chat</title>
+<link rel="stylesheet" href="../css/chatbot.css">
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">🌱 AgriBot</div>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="index.html">About</a>
+        <a href="index.html">Services</a>
+        <a href="index.html">Contact</a>
+    </nav>
+
+    <button class="learn-btn">Learn More</button>
+</header>
+
+<!-- MAIN SECTION -->
+<section class="hero">
+
+    <h1>Chat with AgriBot</h1>
+    <p>How can I assist you today?</p>
+
+    <div class="chat-card">
+
+        <div class="chat-box" id="chatBox">
+
+            <!-- Bot message -->
+            <div class="chat-row bot-row">
+                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" class="bot-img">
+                <div class="message bot">
+                    Hello! I'm AgriBot 🌱 How can I help you today?
+                </div>
+            </div>
+
+        </div>
+
+        <!-- INPUT -->
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your question..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- FOOTER -->
+ <footer class="footer">
+    <div class="footer-content">
+      <h2>🌱 Smart Farming Assistant</h2>
+    </div>
+    <p>© 2026 Smart Farming Assistant | Helping farmers with AI powered insights for better crop decisions.</p>
+    <p>Contact: prachighongade@gmail.com | renukaraut261@gmail.com</p>
+   
+  </footer>
+
+<script src="../js/chatbot.js"></script>
+</body>
+</html>

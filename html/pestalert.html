@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pest Alert</title>
+
+<link rel="stylesheet" href="../css/pestalert.css">
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+</head>
+<body>
+
+    <!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo">🌱 Smart Farming Assistant</div>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Benefits</a>
+        <a href="#">How It Works</a>
+        <button class="signup">Sign Up</button>
+    </nav>
+</header>
+
+<header class="header">
+    <h1>Pest Alert</h1>
+    <p>Stay informed about pest outbreaks in your area</p>
+</header>
+
+<div class="container">
+
+    <!-- TOP SECTION -->
+    <div class="top-section">
+
+        <!-- MAP -->
+        <div class="card map-card">
+            <h2>Pest Outbreak Map</h2>
+            <div id="map"></div>
+
+            <div class="legend">
+                <span class="red"></span> High Risk
+                <span class="yellow"></span> Warning
+            </div>
+        </div>
+
+        <!-- ALERTS -->
+        <div class="card alerts">
+            <h2>Recent Alerts</h2>
+
+            <div class="alert-item">
+                ⚠️ Fall Armyworm detected
+                <small>In North Region - 2 days ago</small>
+            </div>
+
+            <div class="alert-item">
+                🐞 Aphid infestation
+                <small>In Central Area - 4 days ago</small>
+            </div>
+
+            <div class="alert-item">
+                🦗 Locust swarm spotted
+                <small>Spotted Near East Farms - 1 week ago</small>
+            </div>
+
+            <a href="#">View All Alerts</a>
+        </div>
+
+    </div>
+
+    <!-- MIDDLE SECTION -->
+    <div class="middle-section">
+
+        <!-- PEST DETAILS -->
+        <div class="card pest-details">
+            <h2 class="section-title">Pest Details</h2>
+
+            <div class="pest-content">
+
+                <!-- IMAGE -->
+                <div class="pest-img">
+                    <img src="/img/pestdetails.jpg" alt="pest">
+                </div>
+
+                <!-- TEXT -->
+                <div class="pest-info">
+                    <h3 class="pest-name">Fall Armyworm</h3>
+
+                    <p class="pest-desc">
+                        A destructive pest affecting crops like corn and sorghum.
+                    </p>
+
+                    <p class="pest-crops">
+                        <strong>Affected Crops:</strong> Corn, Millet, Sorghum
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PREVENTION -->
+        <div class="card prevention">
+            <h2 class="section-title">Prevention Tips</h2>
+
+            <div class="prevention-content">
+
+                <!-- TEXT -->
+                <div class="prevention-text">
+                    <ul>
+                        <li>Monitor fields regularly</li>
+                        <li>Use pheromone traps</li>
+                        <li>Apply biological controls</li>
+                        <li>Use pesticides carefully</li>
+                    </ul>
+                </div>
+
+                <!-- IMAGE -->
+                <div class="prevention-img">
+                    <img src="/img/prevention tips.jpg"alt="prevention">
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM -->
+    <div class="card notification">
+        <h2>Alert Notifications</h2>
+
+        <label><input type="checkbox"> Email Alerts</label>
+        <label><input type="checkbox"> SMS Alerts</label>
+
+        <button onclick="savePreferences()">Set Alert Preferences</button>
+    </div>
+
+</div>
+
+<footer>
+    <p>© 2026 Smart Farming | All Rights Reserved</p>
+</footer>
+
+<script src="../js/pestalert.js"></script>
+</body>
+</html>

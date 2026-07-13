@@ -1,0 +1,184 @@
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f5f3ef;
+}
+
+/* ── NAVBAR ── */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 10%;
+  background: #05825b;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;          /* ✅ use left+right instead of width:100% to avoid overflow */
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 30px;
+}
+
+header nav a {
+  color: white;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: 400;
+  transition: 0.3s;
+}
+
+header nav a:hover {
+  color: #a5d6a7;
+}
+
+/* ── MAIN CONTAINER ── */
+.main-container {
+  max-width: 1200px;          /* ✅ max-width instead of fixed width */
+  height: 650px;
+  margin: 0 auto;             /* ✅ no top margin here — handled by padding-top on body */
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ Push page content below the fixed navbar */
+body {
+  padding-top: 80px;          /* match this to your header's actual rendered height */
+}
+
+/* ── LEFT IMAGE ── */
+.left-section {
+  flex: 1;
+  background: url("markus-spiske-EK8QN9O0wRk-unsplash.jpg") center / cover no-repeat;
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  top: 40px;
+  left: 30px;
+  color: white;
+}
+
+.overlay h1 {
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.overlay p {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* ── RIGHT LOGIN ── */
+.right-section {
+  flex: 1;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box {
+  width: 260px;
+  text-align: center;
+}
+
+.login-box h2 {
+  color: #2f5d1f;
+  margin-bottom: 20px;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border: 1px solid #cfcfcf;
+  box-sizing: border-box;     /* ✅ prevents inputs from overflowing their container */
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding: 10px;
+  padding-right: 36px;        /* ✅ space so text doesn't sit under the eye icon */
+  margin: 8px 0;
+  border-radius: 6px;
+  border: 1px solid #cfcfcf;
+  box-sizing: border-box;
+}
+
+.eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 12px;
+  margin-top: 8px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to right, #2f5d1f, #4b8b2c);
+  border: none;
+  color: white;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  box-sizing: border-box;     /* ✅ prevents button from overflowing */
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.signup {
+  font-size: 12px;
+  margin-top: 12px;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: rgba(5, 111, 76, 0.9);
+  color: white;
+  padding: 30px;
+  margin-top: 40px;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+footer h4 {
+  margin-bottom: 10px;
+}
+
+footer p {
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+.copyright {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+}

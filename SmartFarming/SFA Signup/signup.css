@@ -1,0 +1,146 @@
+body{
+margin:0;
+font-family: Arial;
+background:#f4f2ed;
+}
+
+/* ── NAVBAR ── */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 10%;
+  background: #05825b;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;          /* ✅ use left+right instead of width:100% to avoid overflow */
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 30px;
+}
+
+header nav a {
+  color: white;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: 400;
+  transition: 0.3s;
+}
+
+header nav a:hover {
+  color: #a5d6a7;
+}
+
+.main-container{
+width:1200px;
+height:650px;
+margin:70px auto;
+display:flex;
+overflow:hidden;
+box-shadow:0 15px 35px rgba(0,0,0,0.2);
+}
+
+.left-section{
+flex:1;
+background:url("markus-spiske-EK8QN9O0wRk-unsplash (1).jpg") center/cover no-repeat;
+position:relative;
+}
+
+.overlay{
+position:absolute;
+top:40px;
+left:30px;
+color:white;
+}
+
+.right-section{
+flex:1;
+background:white;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.signup-box{
+width:270px;
+text-align:center;
+}
+
+.signup-box h2{
+color:#2f5d1f;
+margin-bottom:20px;
+}
+
+.signup-box input{
+width:100%;
+padding:11px;
+margin:8px 0;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+.pass-box{
+position:relative;
+}
+
+.pass-box span{
+position:absolute;
+right:10px;
+top:12px;
+cursor:pointer;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+background:linear-gradient(to right,#2f5d1f,#4b8b2c);
+border:none;
+color:white;
+border-radius:25px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.login-link{
+font-size:13px;
+margin-top:15px;
+}
+
+footer{
+background: rgba(5, 111, 76, 0.9);
+color: white;
+padding:30px;
+margin-top:40px;
+}
+
+.footer-container{
+display:flex;
+justify-content:space-around;
+}
+
+footer h4{
+margin-bottom:10px;
+}
+
+footer p{
+font-size:14px;
+margin:4px 0;
+cursor:pointer;
+}
+
+footer p:hover{
+color:#b6ff7a;
+}
+
+.copyright{
+text-align:center;
+margin-top:20px;
+font-size:13px;
+}

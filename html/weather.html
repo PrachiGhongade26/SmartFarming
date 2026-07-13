@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Weather | Smart Farming Assistant</title>
+
+<link rel="stylesheet" href="../css/weather.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<header class="navbar">
+
+<div class="logo">🌱 Smart Farming Assistant</div>
+
+<nav>
+<a href="#">Home</a>
+<a href="#">About</a>
+<a href="#">Benefits</a>
+<a href="#">How It Works</a>
+<button class="signup">Sign Up</button>
+</nav>
+
+</header>
+
+<section class="weather-page">
+
+<div class="weather-container">
+
+<div class="layout">
+
+<!-- location -->
+<div class="location">
+
+<div class="loc-top">
+<i class="fa-solid fa-location-dot"></i>
+<p>Pune, Maharashtra</p>
+</div>
+
+<span id="dateTime"></span>
+
+</div>
+
+<!-- weather Info -->
+<div class="weather-card">
+<div class="weather-main">
+<h1>28°C</h1>
+<div class="icon">
+<i class="fa-solid fa-cloud-sun"></i>
+</div>
+<p>Partly Cloudy</p>
+</div>
+
+<div class="weather-details">
+<div>
+🌧 Rain Chance
+<h3>20%</h3>
+</div>
+<div>
+💧 Humidity
+<h3>65%</h3>
+</div>
+<div>
+💨 Wind
+<h3>10 km/h</h3>
+</div>
+</div>
+</div>
+
+<!-- HOURLY  -->
+<div class="hourly">
+<h2>Hourly Forecast</h2>
+<div class="hour-box">
+<div class="hour">
+<p>11 AM</p>
+<i class="fa-solid fa-cloud-rain"></i>
+<h4>29°C</h4>
+</div>
+<div class="hour">
+<p>1 PM</p>
+<i class="fa-solid fa-cloud-sun"></i>
+<h4>31°C</h4>
+</div>
+<div class="hour">
+<p>3 PM</p>
+<i class="fa-solid fa-cloud-rain"></i>
+<h4>30°C</h4>
+</div>
+<div class="hour">
+<p>5 PM</p>
+<i class="fa-solid fa-cloud-rain"></i>
+<h4>27°C</h4>
+</div>
+</div>
+</div>
+
+<!-- Today + Tomorrow -->
+<div class="today-tomorrow">
+
+  <div class="day-card">
+    <h3>Today</h3>
+    <img src="/img/todays weather.jpg" alt="weather">
+    <p class="status">Sunny & Hot</p>
+
+    <div class="temp">
+      <span>H: 32°C</span>
+      <span>L: 24°C</span>
+    </div>
+
+    <p class="rain">🌧 10% Rain</p>
+  </div>
+
+  <div class="day-card">
+    <h3>Tomorrow</h3>
+    <img src="../img/tomorrows forecast.png" alt="weather">
+    <p class="status">Cloudy & Rainy</p>
+
+    <div class="temp">
+      <span>H: 30°C</span>
+      <span>L: 23°C</span>
+    </div>
+
+    <p class="rain">🌧 60% Rain</p>
+  </div>
+
+</div>
+
+<!-- ROW 3 -->
+<div class="forecast">
+<h2>7 Day Forecast</h2>
+<div class="days">
+<div class="day"><p>Fri</p><i class="fa-solid fa-cloud-rain"></i><h4>29°C</h4></div>
+<div class="day"><p>Sat</p><i class="fa-solid fa-cloud"></i><h4>31°C</h4></div>
+<div class="day"><p>Sun</p><i class="fa-solid fa-sun"></i><h4>32°C</h4></div>
+<div class="day"><p>Mon</p><i class="fa-solid fa-cloud-rain"></i><h4>27°C</h4></div>
+<div class="day"><p>Tue</p><i class="fa-solid fa-cloud"></i><h4>27°C</h4></div>
+<div class="day"><p>Wed</p><i class="fa-solid fa-cloud-sun"></i><h4>29°C</h4></div>
+<div class="day"><p>Thu</p><i class="fa-solid fa-sun"></i><h4>30°C</h4></div>
+</div>
+</div>
+
+<div class="alerts">
+<h3>⚠ Weather Alerts</h3>
+<p>Heavy rain expected tomorrow afternoon.</p>
+<p>Prepare to protect crops.</p>
+</div>
+
+<!-- Farming Info Wrapper -->
+<div class="farming-info">
+  <div class="tips">
+    <h3>🌧 Rainfall & Soil Info</h3>
+    <p>Today's Rainfall : 5 mm</p>
+    <p>Weekly Rainfall : 25 mm</p>
+    <p>Soil Moisture : Medium</p>
+  </div>
+
+  <div class="farming-tips">
+    <h3>🌱 Farming Tips</h3>
+    <p>💧 Rain expected tomorrow. Avoid spraying pesticides.</p>
+    <p>☀ High temperature today. Increase irrigation.</p>
+  </div>
+</div>
+
+</div>
+</div>
+
+
+</section>
+
+ <footer class="footer">
+    <div class="footer-content">
+      <h2>🌱 Smart Farming Assistant</h2>
+      <p>© 2026 Smart Farming Assistant | Helping farmers with AI powered insights for better crop decisions.</p>
+      <p>Contact: prachighongade@gmail.com | renukaraut261@gmail.com</p>
+    </div>
+   
+  </footer>
+<script src="../js/weather.js"></script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background: #eef5ec;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 60px;
+    background: #0f7b5f;
+    color: white;
+}
+
+.navbar a {
+    margin: 0 15px;
+    color: white;
+    text-decoration: none;
+}
+
+.signup {
+    background: #f4a100;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+}
+
+/* HEADER */
+.header {
+    text-align: center;
+    padding: 60px 20px;
+    color: white;
+    background:
+        linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+        url("/img/pestalert.jpg");
+    background-size: cover;
+    background-position: center;
+    margin-top: 5px;
+}
+
+/* CONTAINER */
+.container {
+    width: 90%;
+    margin: auto;
+}
+
+/* CARD */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* TOP SECTION */
+.top-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+/* MAP */
+#map {
+    height: 400px;
+    width: 100%;
+    border-radius: 10px;
+}
+
+/* ALERTS */
+.alerts {
+    height: 400px;
+    overflow-y: auto;
+}
+
+.alert-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.alert-item small {
+    display: block;
+    color: gray;
+}
+
+/* LEGEND */
+.legend {
+    margin-top: 10px;
+}
+
+.legend span {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin: 0 5px;
+}
+
+.red { background: red; }
+.yellow { background: gold; }
+
+/* MIDDLE SECTION */
+.middle-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* TITLE */
+.section-title {
+    border-bottom: 2px solid #3a7d44;
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+/* ================= PEST DETAILS ================= */
+
+.pest-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.pest-img img {
+    width: 250px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.pest-info {
+    flex: 1;
+}
+
+.pest-name {
+    font-weight: bold;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.pest-desc {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+/* ================= PREVENTION ================= */
+
+/* FLEX LAYOUT (SIDE BY SIDE FIXED) */
+.prevention-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 40px; /* NO GAP */
+}
+
+/* TEXT */
+.prevention-text {
+    margin: 0;
+    padding: 0;
+    /* flex: 0;  */
+    /* stops stretching */
+    margin-top: -70px;
+}
+
+/* TITLE */
+.prevention .section-title {
+    margin: 0;
+    padding-bottom: 3px;
+}
+
+/* LIST */
+.prevention ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.prevention li {
+    margin: 4px 0;
+}
+
+/* IMAGE */
+.prevention-img {
+    margin-left: 5px; /* very small spacing */
+}
+
+.prevention-img img {
+    width: 350px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* BUTTON */
+button {
+    padding: 10px 20px;
+    border: none;
+    background: #3a7d44;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #2e5f33;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .top-section,
+    .middle-section {
+        grid-template-columns: 1fr;
+    }
+
+    .pest-content,
+    .prevention-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .pest-img img,
+    .prevention-img img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 15px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+}

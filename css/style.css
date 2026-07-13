@@ -1,0 +1,503 @@
+/*  BACKGROUND WRAPPER  */
+.how-bg {
+  position: relative;
+  background: url("images/farm-bg.jpg") no-repeat center center/cover;
+  color: white;
+}
+
+/* Dark Overlay */
+.how-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.how,
+.cta,
+footer {
+  position: relative;
+  z-index: 2;
+}
+
+/* GLOBAL */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: #f5fff7;
+  color: #333;
+}
+
+/* NAVBAR  */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 10%;
+  background: #05825b;
+  color: white;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-weight: 600;
+  font-size: 30px;
+}
+
+header nav a {
+  color: white;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: 400;
+  transition: 0.3s;
+}
+
+header nav a:hover {
+  color: #a5d6a7;
+}
+
+.signup-btn {
+  background: orange;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.signup-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* HERO SECTION */
+.hero {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 80px; /* space for fixed navbar */
+  display: flex;
+  align-items: center;
+  padding: 0 10%;
+  color: white;
+}
+
+/* Background Image */
+.hero-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+/* Dark Overlay */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 2;
+}
+
+/* Hero Text */
+.hero-text {
+  position: relative;
+  z-index: 3;
+  max-width: 600px;
+}
+
+.hero-text h1 {
+  font-size: 55px;
+  margin-bottom: 15px;
+}
+
+.hero-text span {
+  color: #4CAF50;
+}
+
+.hero-text p {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.hero-text h4 {
+  font-weight: 400;
+  margin-bottom: 25px;
+}
+
+/* Hero Buttons */
+.hero-buttons button {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 12px;
+  transition: all 0.3s ease;
+}
+
+.login {
+  background: white;
+  color: #1b5e20;
+}
+
+.signup {
+  background: orange;
+  color: white;
+}
+
+.hero-buttons button:hover {
+  transform: translateY(-4px);
+}
+
+/*  ABOUT SECTION  */
+.about {
+  background: #ffffff;
+  padding: 120px 10%;
+  text-align: center;
+}
+
+.about-container {
+  max-width: 1100px;
+  margin: auto;
+}
+
+.about h2 {
+  font-size: 34px;
+  margin-bottom: 20px;
+}
+
+.about-desc {
+  max-width: 700px;
+  margin: 0 auto 60px auto;
+  font-size: 18px;
+  color: #555;
+}
+
+/* Cards Layout */
+.about-cards {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+/* Individual Card */
+.about-card {
+  background: #f8fff9;
+  padding: 35px 25px;
+  width: 280px;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  transition: 0.3s ease;
+}
+
+.about-card:hover {
+  transform: translateY(-10px);
+}
+
+/* Icon Circle */
+.icon-circle {
+  width: 70px;
+  height: 70px;
+  background: #2e7d32;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+  font-size: 28px;
+}
+
+.about-card h4 {
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.about-card p {
+  font-size: 15px;
+  color: #666;
+}
+
+/*  BENEFITS SECTION  */
+.benefits {
+  background: #e8f5e9;
+  padding: 120px 10%;
+  text-align: center;
+}
+
+.benefits h2 {
+  font-size: 34px;
+  margin-bottom: 50px;
+}
+
+/* Card Layout */
+.card-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Card Style */
+.card {
+  background: white;
+  width: 280px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(68, 57, 57, 0.08);
+  transition: 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-12px);
+}
+
+/* Image Section */
+.card-image {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Title on Image */
+.card-image h3 {
+  position:absolute;
+  top: 5px;
+  left: 5px;
+  color: white;
+  font-size: 18px;
+  padding: 6px 12px;
+  border-radius: 6px;
+
+}
+
+/* Content Section */
+.card-content {
+  padding: 20px;
+}
+
+.card-content p {
+  font-size: 15px;
+  font-family:Arial, Helvetica, sans-serif;
+  color: #060606;
+  line-height: 1.6;
+}
+
+/* How it works section and background from how it section to footer  */
+.how-footer-bg {
+  position: relative;
+  background: url("../img/footer\ imag.png") no-repeat center center;
+  background-size: cover;
+  color: white;
+}
+
+/* dark overlay*/
+
+.how-footer-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+/* another sectiion*/
+.how {
+  padding: 120px 10%;
+  text-align: center;
+}
+
+.how h2 {
+  font-size: 32px;
+}
+
+.steps {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-top: 50px;
+  flex-wrap: wrap;
+}
+
+.step {
+  max-width: 200px;
+}
+
+.circle {
+  width: 65px;
+  height: 65px;
+  background: #2e7d32;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+/* CTA  */
+.cta {
+  text-align: center;
+  padding: 100px 10%;
+}
+
+.cta h2 {
+  font-size: 30px;
+}
+
+.cta button {
+  background: orange;
+  border: none;
+  padding: 14px 35px;
+  margin-top: 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.cta button:hover {
+  transform: translateY(-4px);
+}
+
+/* ===================== Chatbot CSS ===================== */
+
+/* Chatbot container */
+.chatbot {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: visible;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+
+  /* Start hidden (JS will handle fade/slide) */
+  opacity: 0;
+  transform: translateY(50px) scale(1);
+
+  /* Smooth animation for scroll & hover */
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+/* Inner wrapper for hover effect on image */
+.chatbot-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+
+  /* Smooth scale on hover */
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Hover effect: scales image smoothly when hovering over chatbot */
+.chatbot:hover .chatbot-inner {
+  transform: scale(1.15);
+}
+
+/* Image inside chatbot */
+.chatbot-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%; 
+}
+
+/* Chat bubble text */
+.chat-text {
+  position: absolute;
+  bottom: 70px; 
+  right: 190%;   
+  transform: translateX(50%);
+  background-color: white;
+  color: #333;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  white-space: nowrap;
+  z-index: 1001;
+
+/* Allow hover to work even when cursor is over text */
+  pointer-events: none;
+}
+
+/* FOOTER  */
+footer {
+  text-align: center;
+  padding: 40px;
+  font-size: 14px;
+  background: #05825b(100, 116, 200, 0.3);
+  backdrop-filter: blur(8px);
+}
+/* RESPONSIVE  */
+@media (max-width: 768px) {
+
+  .hero-text h1 {
+    font-size: 38px;
+  }
+
+  header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .about-icons,
+  .steps {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .card-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.card-container a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card-container a .card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.card-container a .card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}

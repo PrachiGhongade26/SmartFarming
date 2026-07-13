@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SmartFarming – AI Crop Suggestion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-dark: #1a3a2a;
+    --green-mid:  #2d6a4f;
+    --green-light:#52b788;
+    --green-pale: #d8f3dc;
+    --amber:      #f4a01c;
+    --amber-dark: #c77d0a;
+    --cream:      #fdf8ef;
+    --text-dark:  #14271d;
+    --text-mid:   #3d5a47;
+    --text-light: #7a9e87;
+    --white:      #ffffff;
+    --shadow:     0 8px 40px rgba(26,58,42,.13);
+    --radius:     18px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw; height: 68px;
+    background: rgba(26,58,42,.96);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 20px rgba(0,0,0,.2);
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem; color: var(--white); font-weight: 700;
+  }
+  .logo-icon { width: 36px; height: 36px; background: var(--amber); border-radius: 10px; display: grid; place-items: center; font-size: 1.1rem; }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { color: rgba(255,255,255,.75); text-decoration: none; font-size: .9rem; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--white); }
+  .btn-dashboard { background: var(--amber); color: var(--text-dark); border: none; border-radius: 10px; padding: 9px 22px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: .9rem; cursor: pointer; transition: background .2s, transform .15s; }
+  .btn-dashboard:hover { background: var(--amber-dark); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: radial-gradient(ellipse 80% 60% at 20% 50%, rgba(82,183,136,.18) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 80% at 80% 20%, rgba(244,160,28,.1) 0%, transparent 60%),
+                linear-gradient(165deg, #1a3a2a 0%, #2d6a4f 45%, #52b788 100%);
+    display: grid; grid-template-columns: 1fr 440px; gap: 40px;
+    align-items: center; padding: 110px 5vw 60px; position: relative; overflow: hidden;
+  }
+  .hero::before { content: ''; position: absolute; top: -80px; right: -80px; width: 400px; height: 400px; border-radius: 50%; background: rgba(244,160,28,.08); pointer-events: none; }
+  .hero::after  { content: ''; position: absolute; bottom: -60px; left: 30%; width: 300px; height: 300px; border-radius: 50%; background: rgba(82,183,136,.1); pointer-events: none; }
+
+  .hero-left { position: relative; z-index: 2; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(244,160,28,.15); border: 1px solid rgba(244,160,28,.35); color: var(--amber); border-radius: 100px; padding: 5px 14px; font-size: .8rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 20px; animation: fadeUp .6s ease both; }
+  .hero-tag::before { content: '🌱'; }
+  .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2.6rem, 5vw, 4rem); color: var(--white); line-height: 1.1; animation: fadeUp .6s .1s ease both; }
+  .hero-title span { color: var(--amber); }
+  .hero-sub { color: rgba(255,255,255,.72); font-size: 1.1rem; line-height: 1.6; margin: 18px 0 32px; max-width: 520px; animation: fadeUp .6s .2s ease both; }
+  .hero-stats { display: flex; gap: 32px; animation: fadeUp .6s .3s ease both; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--amber); font-weight: 900; }
+  .stat-lbl { font-size: .78rem; color: rgba(255,255,255,.6); margin-top: 2px; }
+  .float-icons { display: flex; gap: 14px; margin-top: 36px; animation: fadeUp .6s .4s ease both; }
+  .fi { width: 48px; height: 48px; border-radius: 14px; background: rgba(255,255,255,.1); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.15); display: grid; place-items: center; font-size: 1.4rem; animation: floatY 3s ease-in-out infinite; }
+  .fi:nth-child(2) { animation-delay: .5s; }
+  .fi:nth-child(3) { animation-delay: 1s; }
+  .fi:nth-child(4) { animation-delay: 1.5s; }
+
+  /* FORM CARD */
+  .form-card { background: var(--white); border-radius: var(--radius); padding: 32px 28px; box-shadow: var(--shadow); position: relative; z-index: 3; animation: slideIn .7s .15s ease both; }
+  .form-card h2 { font-family: 'Playfair Display', serif; font-size: 1.45rem; color: var(--text-dark); }
+  .form-card > p { font-size: .84rem; color: var(--text-light); margin-top: 6px; line-height: 1.5; }
+
+  /* Language row */
+  .lang-row { display: flex; align-items: center; justify-content: space-between; margin: 16px 0 4px; }
+  .lang-label { font-size: .8rem; font-weight: 600; color: var(--text-mid); }
+  .lang-btns { display: flex; gap: 6px; }
+  .lang-btn { padding: 5px 11px; border-radius: 8px; border: 1.5px solid #dce8e0; background: #f8fdf9; font-size: .76rem; font-weight: 600; cursor: pointer; transition: all .2s; color: var(--text-mid); font-family: 'DM Sans', sans-serif; }
+  .lang-btn.active { background: var(--green-mid); color: #fff; border-color: var(--green-mid); }
+
+  /* Location input */
+  .location-wrap { position: relative; margin: 14px 0 10px; }
+  .location-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; pointer-events: none; }
+  .location-wrap input { width: 100%; padding: 13px 13px 13px 42px; border: 2px solid #dce8e0; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: .97rem; color: var(--text-dark); background: #f8fdf9; transition: border-color .2s, box-shadow .2s; outline: none; }
+  .location-wrap input:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(45,106,79,.1); background: #fff; }
+  .location-wrap input::placeholder { color: #aac4b4; }
+
+  /* Autocomplete */
+  .autocomplete-list { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #fff; border-radius: 12px; box-shadow: 0 8px 32px rgba(26,58,42,.15); border: 1.5px solid #e4f0e8; z-index: 50; overflow: hidden; display: none; }
+  .autocomplete-list.show { display: block; }
+  .ac-item { padding: 11px 14px; cursor: pointer; font-size: .88rem; color: var(--text-dark); transition: background .15s; display: flex; align-items: center; gap: 10px; }
+  .ac-item:hover { background: var(--green-pale); }
+  .ac-name { font-weight: 500; }
+  .ac-state { color: var(--text-light); font-size: .78rem; }
+
+  /* GPS button */
+  .btn-gps { width: 100%; padding: 10px; background: var(--green-pale); color: var(--green-mid); border: 1.5px solid #b7e4c7; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: .86rem; font-weight: 600; cursor: pointer; transition: background .2s; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-gps:hover { background: #b7e4c7; }
+
+  /* Detected pills */
+  .detected-info { display: none; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+  .detected-info.show { display: flex; }
+  .info-pill { background: #f0faf3; border: 1px solid #b7e4c7; border-radius: 100px; padding: 4px 11px; font-size: .76rem; font-weight: 600; color: var(--green-mid); display: flex; align-items: center; gap: 4px; }
+
+  /* Suggest button */
+  .btn-suggest { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--amber) 0%, #e8920c 100%); color: var(--text-dark); border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 4px; transition: transform .15s, box-shadow .2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 20px rgba(244,160,28,.4); }
+  .btn-suggest:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(244,160,28,.5); }
+  .btn-suggest.loading { opacity: .75; pointer-events: none; }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(0,0,0,.2); border-top-color: var(--text-dark); border-radius: 50%; animation: spin .7s linear infinite; display: none; }
+  .btn-suggest.loading .spinner { display: block; }
+  .btn-suggest.loading .btn-text { display: none; }
+
+  .status-msg { font-size: .8rem; color: var(--text-light); text-align: center; margin-top: 10px; min-height: 18px; }
+  .status-msg.error { color: #e53935; }
+
+  /* HOW IT WORKS */
+  .section { padding: 80px 5vw; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,3vw,2.5rem); color: var(--text-dark); text-align: center; margin-bottom: 10px; }
+  .section-sub { text-align: center; color: var(--text-light); font-size: 1rem; margin-bottom: 52px; }
+  .steps-wrap { position: relative; }
+  .steps-wrap::before { content: ''; position: absolute; top: 50px; left: calc(12.5% + 24px); right: calc(12.5% + 24px); height: 2px; background: linear-gradient(90deg, var(--green-light), var(--amber)); z-index: 0; }
+  .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; }
+  .step { text-align: center; padding: 32px 20px; background: var(--white); border-radius: var(--radius); border: 1.5px solid #e4f0e8; transition: transform .25s, box-shadow .25s; position: relative; }
+  .step:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+  .step-num { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--green-mid); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: .75rem; font-weight: 700; }
+  .step-icon { font-size: 2.4rem; margin-bottom: 14px; display: block; }
+  .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--text-dark); }
+  .step p { font-size: .85rem; color: var(--text-light); line-height: 1.6; }
+
+  /* RESULTS */
+  #results-section { padding: 0 5vw 80px; display: none; }
+  #results-section.show { display: block; animation: fadeUp .5s ease both; }
+
+  .weather-strip { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+  .weather-card { background: var(--white); border-radius: 14px; padding: 16px 20px; border: 1.5px solid #e4f0e8; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 12px rgba(26,58,42,.06); flex: 1; min-width: 130px; }
+  .wc-icon { font-size: 1.8rem; }
+  .wc-val { font-size: 1.2rem; font-weight: 700; color: var(--text-dark); }
+  .wc-lbl { font-size: .72rem; color: var(--text-light); }
+
+  .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .results-header h2 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--text-dark); }
+  .ai-badge { display: flex; align-items: center; gap: 6px; background: var(--green-pale); border: 1px solid #b7e4c7; color: var(--green-mid); border-radius: 100px; padding: 6px 14px; font-size: .8rem; font-weight: 600; }
+
+  .crops-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-bottom: 32px; }
+  .crop-card { border-radius: var(--radius); overflow: hidden; background: var(--white); border: 1.5px solid #e4f0e8; box-shadow: 0 4px 20px rgba(26,58,42,.06); transition: transform .25s, box-shadow .25s; cursor: pointer; }
+  .crop-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+  .crop-card-img { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, var(--green-pale) 0%, #b7e4c7 100%); }
+  .crop-card-body { padding: 20px; }
+  .crop-card-body h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text-dark); margin-bottom: 6px; }
+  .crop-score { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .score-bar-bg { flex: 1; height: 6px; background: #e4f0e8; border-radius: 3px; overflow: hidden; }
+  .score-bar { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--green-light), var(--amber)); transition: width .8s ease; }
+  .score-val { font-size: .78rem; font-weight: 700; color: var(--green-mid); }
+  .crop-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .tag { background: var(--green-pale); color: var(--green-mid); border-radius: 100px; padding: 3px 10px; font-size: .74rem; font-weight: 500; }
+  .crop-card-body p { font-size: .85rem; color: var(--text-light); line-height: 1.6; }
+  .btn-learn { display: inline-block; margin-top: 14px; background: linear-gradient(135deg, var(--amber) 0%, #e8920c 100%); color: var(--text-dark); border: none; border-radius: 8px; padding: 8px 18px; font-size: .85rem; font-weight: 700; cursor: pointer; transition: transform .15s, box-shadow .2s; box-shadow: 0 3px 12px rgba(244,160,28,.3); font-family: 'DM Sans', sans-serif; }
+  .btn-learn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(244,160,28,.4); }
+
+  .ai-advice { background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%); border-radius: var(--radius); padding: 32px; color: #fff; position: relative; overflow: hidden; }
+  .ai-advice::before { content: '🤖'; position: absolute; right: 30px; top: 50%; transform: translateY(-50%); font-size: 6rem; opacity: .08; }
+  .ai-advice h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 14px; }
+  .ai-advice p { font-size: .95rem; line-height: 1.75; color: rgba(255,255,255,.85); }
+  .typing-cursor { display: inline-block; width: 2px; height: 1em; background: var(--amber); vertical-align: middle; animation: blink .7s steps(1) infinite; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; z-index: 999; background: rgba(14,30,20,.7); backdrop-filter: blur(4px); display: none; place-items: center; }
+  .modal-overlay.show { display: grid; }
+  .modal { background: var(--white); border-radius: 24px; padding: 40px; max-width: 560px; width: 90%; position: relative; animation: fadeUp .4s ease; }
+  .modal-close { position: absolute; top: 18px; right: 18px; width: 32px; height: 32px; border-radius: 8px; border: none; background: #f0f0f0; cursor: pointer; font-size: 1rem; display: grid; place-items: center; transition: background .2s; }
+  .modal-close:hover { background: #e0e0e0; }
+  .modal h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 6px; }
+  .modal-icon { font-size: 3.5rem; margin-bottom: 12px; display: block; }
+  .modal-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .md-item { background: var(--green-pale); border-radius: 12px; padding: 14px; }
+  .md-item .md-label { font-size: .75rem; color: var(--text-light); font-weight: 600; }
+  .md-item .md-val { font-size: 1rem; font-weight: 700; color: var(--text-dark); margin-top: 3px; }
+  .modal-desc { font-size: .9rem; color: var(--text-mid); line-height: 1.7; }
+
+  footer { background: var(--green-dark); color: rgba(255,255,255,.5); text-align: center; padding: 28px; font-size: .85rem; }
+  footer span { color: var(--amber); }
+
+  @keyframes fadeUp  { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes slideIn { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes floatY  { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+  @keyframes spin    { to { transform:rotate(360deg); } }
+  @keyframes blink   { 0%,100% { opacity:1; } 50% { opacity:0; } }
+
+  @media(max-width:900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 100px; }
+    .hero-left { text-align: center; }
+    .hero-stats { justify-content: center; }
+    .float-icons { display: none; }
+    .form-card { max-width: 500px; margin: 0 auto; }
+    .steps { grid-template-columns: repeat(2,1fr); }
+    .steps-wrap::before { display: none; }
+    .crops-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media(max-width:600px) {
+    .steps { grid-template-columns: 1fr; }
+    .crops-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .modal-detail { grid-template-columns: 1fr; }
+    .weather-strip { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo"><div class="logo-icon">🌿</div>SmartFarming</div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html">About</a></li>
+    <li><a href="#">Services</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <a href="dashboard.html"><button class="btn-dashboard">Dashboard</button></a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Smart Agriculture Platform</div>
+    <h1 class="hero-title">AI <span>Crop Suggestion</span><br>for Smart Farming</h1>
+    <p class="hero-sub">Just type your village or city name — our AI automatically detects your soil, weather, and season to recommend the best crops for your land.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">50+</div><div class="stat-lbl">Crop Varieties</div></div>
+      <div class="stat"><div class="stat-num">98%</div><div class="stat-lbl">Accuracy Rate</div></div>
+      <div class="stat"><div class="stat-num">12K+</div><div class="stat-lbl">Farmers Helped</div></div>
+    </div>
+    <div class="float-icons">
+      <div class="fi">🚜</div><div class="fi">🌾</div><div class="fi">🤖</div><div class="fi">📡</div>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="form-card">
+    <h2>Where is Your Farm?</h2>
+    <p>Just enter your village, city, or district — we'll automatically detect weather, soil & season!</p>
+
+    <!-- Language toggle -->
+    <div class="lang-row">
+      <span class="lang-label">Language / भाषा</span>
+      <div class="lang-btns">
+        <button class="lang-btn active" onclick="setLang('en',event)">English</button>
+        <button class="lang-btn" onclick="setLang('hi',event)">हिंदी</button>
+        <button class="lang-btn" onclick="setLang('mr',event)">मराठी</button>
+      </div>
+    </div>
+
+    <!-- Location input -->
+    <div class="location-wrap">
+      <span class="location-icon">📍</span>
+      <input type="text" id="locationInput"
+        placeholder="e.g. Nashik, Pune, Vidisha, Warangal…"
+        autocomplete="off"
+        oninput="onLocationInput()"
+        onkeydown="onLocationKey(event)"/>
+      <div class="autocomplete-list" id="autocompleteList"></div>
+    </div>
+
+    <!-- GPS -->
+    <button class="btn-gps" onclick="useGPS()">
+      🛰️ <span id="gpsLabel">Use My Current Location (GPS)</span>
+    </button>
+
+    <!-- Auto-detected pills -->
+    <div class="detected-info" id="detectedInfo"></div>
+
+    <button class="btn-suggest" id="suggestBtn" onclick="getSuggestions()">
+      <span class="spinner"></span>
+      <span class="btn-text" id="suggestBtnText">🌱 Get Crop Suggestions</span>
+    </button>
+    <p class="status-msg" id="statusMsg"></p>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <h2 class="section-title" id="howTitle">How It Works</h2>
+  <p class="section-sub" id="howSub">No technical knowledge needed — just your location!</p>
+  <div class="steps-wrap">
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><span class="step-icon">📍</span><h3 id="s1h">Enter Location</h3><p id="s1p">Type your village or city name or tap GPS — no technical data needed.</p></div>
+      <div class="step"><div class="step-num">2</div><span class="step-icon">🌦️</span><h3 id="s2h">Auto Detection</h3><p id="s2p">We automatically fetch real weather, soil type, and current season for your area.</p></div>
+      <div class="step"><div class="step-num">3</div><span class="step-icon">🧠</span><h3 id="s3h">AI Analysis</h3><p id="s3p">Our ML model scores 20+ crops against your area's exact conditions.</p></div>
+      <div class="step"><div class="step-num">4</div><span class="step-icon">🌾</span><h3 id="s4h">Get Recommendations</h3><p id="s4p">Receive best crops with tips and market insights in your language.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results-section">
+  <div class="weather-strip" id="weatherStrip"></div>
+  <div class="results-header">
+    <h2 id="resultsTitle">Recommended Crops for You</h2>
+    <div class="ai-badge">🤖 AI Analysed</div>
+  </div>
+  <div class="crops-grid" id="cropsGrid"></div>
+  <div class="ai-advice">
+    <h3 id="adviceTitle">🌿 AI Expert Advice</h3>
+    <p id="aiAdviceText"></p>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <span class="modal-icon" id="modalIcon"></span>
+    <h2 id="modalTitle2"></h2>
+    <p id="modalSubtitle" style="color:var(--text-light);font-size:.9rem;margin-bottom:4px;"></p>
+    <div class="crop-tags" id="modalTags"></div>
+    <div class="modal-detail" id="modalDetail"></div>
+    <p class="modal-desc" id="modalDesc"></p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 <span>SmartFarming</span> · AI Crop Suggestion Platform · Built for Indian Farmers 🇮🇳</p>
+</footer>
+
+<script>
+/* ── LANGUAGE STRINGS ── */
+const LANGS = {
+  en: {
+    placeholder:"e.g. Nashik, Pune, Vidisha, Warangal…",
+    gpsLabel:"Use My Current Location (GPS)",
+    suggestBtn:"🌱 Get Crop Suggestions",
+    searching:"🔍 Searching location…",
+    fetchingWeather:"🌦️ Fetching real weather data…",
+    analysing:"🧠 AI is analysing your area…",
+    errorNotFound:"❌ Location not found. Please try another name.",
+    errorGPS:"❌ GPS access denied. Please type your location.",
+    gpsDetected:"✅ Location detected via GPS!",
+    resultsTitle:"Recommended Crops for You",
+    adviceTitle:"🌿 AI Expert Advice",
+    howTitle:"How It Works",
+    howSub:"No technical knowledge needed — just your location!",
+    s1h:"Enter Location", s1p:"Type your village or city name or tap GPS.",
+    s2h:"Auto Detection", s2p:"We automatically fetch real weather, soil type, and current season.",
+    s3h:"AI Analysis",   s3p:"Our ML model scores 20+ crops against your conditions.",
+    s4h:"Get Recommendations", s4p:"Best crops with tips and market insights.",
+    learnMore:"Learn More",
+    detectedLoc:"Detected Location",
+    growLabel:"Growth Duration", yieldLabel:"Average Yield",
+    idealTemp:"Ideal Temperature", rainNeeded:"Rainfall Needed",
+    phRange:"Soil pH Range", market:"Market Outlook",
+    scoreLabel:"ML Suitability Score",
+    tempLbl:"Temperature", humidLbl:"Humidity",
+    rainLbl:"Rainfall/mo", windLbl:"Wind"
+  },
+  hi: {
+    placeholder:"जैसे: नासिक, पुणे, विदिशा, वारंगल…",
+    gpsLabel:"मेरी वर्तमान स्थिति उपयोग करें (GPS)",
+    suggestBtn:"🌱 फसल सुझाव पाएं",
+    searching:"🔍 स्थान खोजा जा रहा है…",
+    fetchingWeather:"🌦️ मौसम डेटा लाया जा रहा है…",
+    analysing:"🧠 AI आपके क्षेत्र का विश्लेषण कर रहा है…",
+    errorNotFound:"❌ स्थान नहीं मिला। कृपया पुनः प्रयास करें।",
+    errorGPS:"❌ GPS अनुमति नहीं मिली। कृपया स्थान टाइप करें।",
+    gpsDetected:"✅ GPS से स्थान मिला!",
+    resultsTitle:"आपके लिए अनुशंसित फसलें",
+    adviceTitle:"🌿 AI विशेषज्ञ सलाह",
+    howTitle:"यह कैसे काम करता है",
+    howSub:"कोई तकनीकी ज्ञान नहीं चाहिए — बस अपना स्थान!",
+    s1h:"स्थान दर्ज करें", s1p:"अपने गाँव या शहर का नाम टाइप करें।",
+    s2h:"स्वत: पहचान",   s2p:"हम मौसम, मिट्टी और मौसम स्वत: पता लगाते हैं।",
+    s3h:"AI विश्लेषण",   s3p:"हमारा ML मॉडल 20+ फसलों का विश्लेषण करता है।",
+    s4h:"सुझाव पाएं",    s4p:"सर्वोत्तम फसलें, टिप्स और बाजार जानकारी।",
+    learnMore:"अधिक जानें",
+    detectedLoc:"पहचाना गया स्थान",
+    growLabel:"विकास अवधि", yieldLabel:"औसत उत्पादन",
+    idealTemp:"आदर्श तापमान", rainNeeded:"आवश्यक वर्षा",
+    phRange:"मिट्टी pH सीमा", market:"बाजार दृष्टिकोण",
+    scoreLabel:"ML उपयुक्तता स्कोर",
+    tempLbl:"तापमान", humidLbl:"आर्द्रता",
+    rainLbl:"वर्षा/माह", windLbl:"हवा"
+  },
+  mr: {
+    placeholder:"उदा: नाशिक, पुणे, विदिशा, वारंगल…",
+    gpsLabel:"माझे सध्याचे स्थान वापरा (GPS)",
+    suggestBtn:"🌱 पीक सूचना मिळवा",
+    searching:"🔍 स्थान शोधत आहे…",
+    fetchingWeather:"🌦️ हवामान डेटा आणत आहे…",
+    analysing:"🧠 AI तुमच्या क्षेत्राचे विश्लेषण करत आहे…",
+    errorNotFound:"❌ स्थान सापडले नाही. कृपया पुन्हा प्रयत्न करा.",
+    errorGPS:"❌ GPS परवानगी नाकारली. कृपया स्थान टाइप करा.",
+    gpsDetected:"✅ GPS द्वारे स्थान सापडले!",
+    resultsTitle:"तुमच्यासाठी शिफारस केलेली पिके",
+    adviceTitle:"🌿 AI तज्ञ सल्ला",
+    howTitle:"हे कसे कार्य करते",
+    howSub:"कोणतेही तांत्रिक ज्ञान नको — फक्त तुमचे स्थान!",
+    s1h:"स्थान प्रविष्ट करा", s1p:"तुमच्या गावाचे किंवा शहराचे नाव टाइप करा.",
+    s2h:"स्वयंचलित शोध",     s2p:"आम्ही हवामान, माती आणि हंगाम स्वयंचलितपणे शोधतो.",
+    s3h:"AI विश्लेषण",        s3p:"आमचे ML मॉडेल 20+ पिकांचे विश्लेषण करते.",
+    s4h:"शिफारसी मिळवा",      s4p:"सर्वोत्तम पिके, टिप्स आणि बाजार माहिती.",
+    learnMore:"अधिक जाणून घ्या",
+    detectedLoc:"शोधलेले स्थान",
+    growLabel:"वाढ कालावधी", yieldLabel:"सरासरी उत्पन्न",
+    idealTemp:"आदर्श तापमान", rainNeeded:"आवश्यक पाऊस",
+    phRange:"माती pH श्रेणी", market:"बाजार दृष्टीकोन",
+    scoreLabel:"ML योग्यता स्कोर",
+    tempLbl:"तापमान", humidLbl:"आर्द्रता",
+    rainLbl:"पाऊस/महिना", windLbl:"वारा"
+  }
+};
+
+let currentLang = 'en';
+let L = LANGS.en;
+
+function setLang(lang, e) {
+  currentLang = lang; L = LANGS[lang];
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  if (e && e.target) e.target.classList.add('active');
+  document.getElementById('locationInput').placeholder = L.placeholder;
+  document.getElementById('gpsLabel').textContent = L.gpsLabel;
+  document.getElementById('suggestBtnText').textContent = L.suggestBtn;
+  ['howTitle','howSub','resultsTitle','adviceTitle',
+   's1h','s1p','s2h','s2p','s3h','s3p','s4h','s4p'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = L[id];
+  });
+}
+
+/* ── INDIA STATE → SOIL TYPE MAP ── */
+const STATE_SOIL = {
+  "Maharashtra":"black","Madhya Pradesh":"black","Gujarat":"black",
+  "Andhra Pradesh":"black","Telangana":"black","Karnataka":"red",
+  "Tamil Nadu":"red","Kerala":"red","Goa":"red",
+  "Rajasthan":"sandy","Haryana":"alluvial","Punjab":"alluvial",
+  "Uttar Pradesh":"alluvial","Bihar":"alluvial","West Bengal":"alluvial",
+  "Assam":"alluvial","Odisha":"red","Jharkhand":"red",
+  "Chhattisgarh":"red","Himachal Pradesh":"loamy","Uttarakhand":"loamy",
+  "Jammu and Kashmir":"loamy","Delhi":"alluvial","Manipur":"loamy",
+  "Meghalaya":"loamy","Nagaland":"loamy","Tripura":"alluvial",
+  "Arunachal Pradesh":"loamy","Sikkim":"loamy","Mizoram":"loamy"
+};
+
+/* ── SOIL DEFAULTS (pH, N, K) per soil type ── */
+const SOIL_DEFAULTS = {
+  black:    {ph:7.2, nitrogen:90, potassium:55},
+  alluvial: {ph:7.0, nitrogen:85, potassium:45},
+  red:      {ph:6.2, nitrogen:50, potassium:30},
+  sandy:    {ph:6.5, nitrogen:40, potassium:25},
+  loamy:    {ph:6.8, nitrogen:75, potassium:40},
+  clay:     {ph:7.1, nitrogen:80, potassium:50},
+  silt:     {ph:6.9, nitrogen:70, potassium:38},
+  laterite: {ph:5.8, nitrogen:45, potassium:28},
+  peaty:    {ph:5.2, nitrogen:60, potassium:20},
+  chalky:   {ph:7.8, nitrogen:55, potassium:35}
+};
+
+/* ── AUTO-DETECT SEASON FROM DATE ── */
+function getCurrentSeason() {
+  const m = new Date().getMonth() + 1;
+  if (m >= 6 && m <= 10) return 'kharif';
+  if (m >= 11 || m <= 3) return 'rabi';
+  return 'zaid';
+}
+
+/* ── GEOCODING (OpenStreetMap Nominatim — free) ── */
+async function geocodeLocation(query) {
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ', India')}&format=json&limit=5&addressdetails=1`;
+  const res = await fetch(url, {headers:{'Accept-Language':'en'}});
+  return await res.json();
+}
+
+/* ── REAL WEATHER (Open-Meteo — free, no API key) ── */
+async function fetchWeather(lat, lon) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation&daily=precipitation_sum&timezone=auto&forecast_days=7`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const c = data.current;
+  const totalRain = (data.daily?.precipitation_sum || []).reduce((a,b)=>a+(b||0),0);
+  return {
+    temperature: Math.round(c.temperature_2m),
+    humidity:    Math.round(c.relative_humidity_2m),
+    rainfall:    Math.round(totalRain * 4), // weekly → monthly estimate
+    wind:        Math.round(c.wind_speed_10m)
+  };
+}
+
+/* ── AUTOCOMPLETE ── */
+let acResults = [], acIndex = -1, acTimer = null;
+
+async function onLocationInput() {
+  const q = document.getElementById('locationInput').value.trim();
+  if (q.length < 2) { hideAC(); return; }
+  clearTimeout(acTimer);
+  acTimer = setTimeout(async () => {
+    const results = await geocodeLocation(q);
+    acResults = results;
+    const list = document.getElementById('autocompleteList');
+    list.innerHTML = '';
+    if (!results.length) { hideAC(); return; }
+    results.slice(0,5).forEach((r,i) => {
+      const name  = r.display_name.split(',')[0];
+      const state = r.address?.state || '';
+      const div   = document.createElement('div');
+      div.className = 'ac-item';
+      div.innerHTML = `<span>📍</span><span class="ac-name">${name}</span><span class="ac-state">${state}</span>`;
+      div.onclick = () => selectLocation(r);
+      list.appendChild(div);
+    });
+    list.classList.add('show');
+    acIndex = -1;
+  }, 350);
+}
+
+function onLocationKey(e) {
+  const items = document.querySelectorAll('.ac-item');
+  if      (e.key === 'ArrowDown') { acIndex = Math.min(acIndex+1, items.length-1); highlightAC(items); }
+  else if (e.key === 'ArrowUp')   { acIndex = Math.max(acIndex-1, 0); highlightAC(items); }
+  else if (e.key === 'Enter')     { if (acIndex >= 0 && acResults[acIndex]) selectLocation(acResults[acIndex]); else if (acResults[0]) selectLocation(acResults[0]); hideAC(); }
+  else if (e.key === 'Escape')    { hideAC(); }
+}
+function highlightAC(items) { items.forEach((item,i) => item.style.background = i===acIndex ? 'var(--green-pale)' : ''); }
+function hideAC() { document.getElementById('autocompleteList').classList.remove('show'); }
+
+let selectedLocation = null;
+
+function selectLocation(result) {
+  selectedLocation = result;
+  document.getElementById('locationInput').value = result.display_name.split(',').slice(0,3).join(', ');
+  hideAC();
+  const state = result.address?.state || '';
+  const soil  = STATE_SOIL[state] || 'loamy';
+  renderPills(state, soil, getCurrentSeason());
+}
+
+function renderPills(state, soil, season) {
+  const wrap = document.getElementById('detectedInfo');
+  wrap.innerHTML = `<div class="info-pill">🌍 ${state||'India'}</div><div class="info-pill">🪨 ${soil} soil</div><div class="info-pill">🗓️ ${season} season</div>`;
+  wrap.classList.add('show');
+}
+
+/* ── GPS ── */
+async function useGPS() {
+  if (!navigator.geolocation) { alert('GPS not supported on this device.'); return; }
+  setStatus(L.searching);
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const {latitude:lat, longitude:lon} = pos.coords;
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+    const res = await fetch(url, {headers:{'Accept-Language':'en'}});
+    const data = await res.json();
+    selectedLocation = {lat, lon, address: data.address, display_name: data.display_name};
+    const place = data.address?.city || data.address?.town || data.address?.village || 'Your Location';
+    const state = data.address?.state || '';
+    document.getElementById('locationInput').value = `${place}, ${state}`;
+    const soil = STATE_SOIL[state] || 'loamy';
+    renderPills(state, soil, getCurrentSeason());
+    setStatus(L.gpsDetected);
+  }, () => setStatus(L.errorGPS, true));
+}
+
+/* ── CROP DATABASE ── */
+const CROP_DB = [
+  {name:"Rice",icon:"🌾",season:["kharif","yearround"],soil:["clay","alluvial","loamy","silt","black"],temp:[20,35],humidity:[60,100],rainfall:[100,300],ph:[5.5,7.0],nitrogen:[60,120],potassium:[20,80],desc:"A staple cereal that thrives in warm, waterlogged conditions. Best suited for delta and flood-prone regions.",growDays:"110–150 days",yield:"4–6 t/ha",market:"High demand, MSP support"},
+  {name:"Wheat",icon:"🌿",season:["rabi"],soil:["loamy","clay","alluvial","silt"],temp:[10,25],humidity:[40,80],rainfall:[30,100],ph:[6.0,7.5],nitrogen:[80,150],potassium:[30,60],desc:"India's primary rabi crop. Grows best in cool, dry weather with fertile, well-drained loamy soils.",growDays:"90–120 days",yield:"3–5 t/ha",market:"Strong MSP, national demand"},
+  {name:"Maize",icon:"🌽",season:["kharif","zaid","yearround"],soil:["loamy","sandy","alluvial","red"],temp:[18,35],humidity:[50,80],rainfall:[60,150],ph:[5.8,7.0],nitrogen:[80,160],potassium:[30,60],desc:"A versatile cereal used for food, feed, and industry. Grows in diverse soils with good drainage.",growDays:"75–100 days",yield:"5–8 t/ha",market:"Growing demand, ethanol sector"},
+  {name:"Soybean",icon:"🫘",season:["kharif"],soil:["loamy","alluvial","black","clay"],temp:[20,32],humidity:[60,85],rainfall:[60,150],ph:[6.0,7.0],nitrogen:[20,80],potassium:[40,80],desc:"An oilseed legume that fixes nitrogen. Ideal for black soils of central India.",growDays:"90–120 days",yield:"1.5–3 t/ha",market:"Oil & protein demand rising"},
+  {name:"Cotton",icon:"🌀",season:["kharif"],soil:["black","alluvial","loamy","red"],temp:[25,40],humidity:[40,75],rainfall:[60,150],ph:[6.0,8.0],nitrogen:[60,120],potassium:[40,80],desc:"A major cash crop in dry zones. Black soil (regur) is ideal for water retention.",growDays:"150–180 days",yield:"1.5–4 t/ha",market:"Textile industry, export"},
+  {name:"Sugarcane",icon:"🎋",season:["yearround","kharif"],soil:["alluvial","loamy","clay","black"],temp:[20,38],humidity:[65,90],rainfall:[100,250],ph:[6.0,7.5],nitrogen:[100,200],potassium:[60,120],desc:"A perennial crop requiring deep, fertile soils and ample water. Grown for sugar and ethanol.",growDays:"300–365 days",yield:"60–100 t/ha",market:"Sugar mills, high value"},
+  {name:"Groundnut",icon:"🥜",season:["kharif","zaid"],soil:["sandy","red","loamy","alluvial"],temp:[22,36],humidity:[45,75],rainfall:[50,130],ph:[5.5,7.0],nitrogen:[20,60],potassium:[20,60],desc:"A drought-tolerant oilseed crop suited for sandy and red soils with good drainage.",growDays:"90–130 days",yield:"1.5–3 t/ha",market:"Oil, peanut butter export"},
+  {name:"Chickpea",icon:"🫛",season:["rabi"],soil:["loamy","clay","alluvial","black"],temp:[15,28],humidity:[30,70],rainfall:[25,80],ph:[6.0,8.0],nitrogen:[20,60],potassium:[20,50],desc:"A protein-rich legume suited for cool, dry rabi conditions with minimal rainfall.",growDays:"90–110 days",yield:"1–2.5 t/ha",market:"High protein demand"},
+  {name:"Mustard",icon:"🌼",season:["rabi"],soil:["loamy","alluvial","sandy","silt"],temp:[10,25],humidity:[30,70],rainfall:[20,70],ph:[6.0,7.5],nitrogen:[60,100],potassium:[20,50],desc:"A major rabi oilseed crop preferring cool temperatures and well-drained loamy soil.",growDays:"85–110 days",yield:"1–2 t/ha",market:"Edible oil, exports"},
+  {name:"Tomato",icon:"🍅",season:["rabi","zaid","yearround"],soil:["loamy","alluvial","sandy","silt"],temp:[18,32],humidity:[60,85],rainfall:[40,100],ph:[6.0,7.0],nitrogen:[80,140],potassium:[80,140],desc:"A high-value vegetable grown across seasons in well-drained loamy soils.",growDays:"60–90 days",yield:"20–40 t/ha",market:"High value, urban demand"},
+  {name:"Potato",icon:"🥔",season:["rabi","zaid"],soil:["loamy","sandy","alluvial","silt"],temp:[10,25],humidity:[60,85],rainfall:[40,100],ph:[5.0,6.5],nitrogen:[100,180],potassium:[100,160],desc:"A starchy tuber crop grown in cool conditions. Prefers deep, loose, well-drained soils.",growDays:"70–100 days",yield:"20–35 t/ha",market:"Strong urban demand"},
+  {name:"Onion",icon:"🧅",season:["rabi","zaid","yearround"],soil:["loamy","alluvial","clay","silt"],temp:[13,30],humidity:[50,80],rainfall:[30,80],ph:[6.0,7.5],nitrogen:[60,100],potassium:[60,100],desc:"A versatile bulb crop grown across India in varied soils. Prefers dry weather at maturity.",growDays:"90–130 days",yield:"20–30 t/ha",market:"Essential commodity"},
+  {name:"Banana",icon:"🍌",season:["yearround"],soil:["alluvial","loamy","clay","black"],temp:[20,38],humidity:[65,95],rainfall:[100,250],ph:[5.5,7.0],nitrogen:[100,200],potassium:[150,250],desc:"A tropical fruit crop needing warm climate, high humidity, and fertile, well-drained soil.",growDays:"270–365 days",yield:"20–50 t/ha",market:"High domestic consumption"},
+  {name:"Mango",icon:"🥭",season:["zaid","yearround"],soil:["alluvial","loamy","red","laterite"],temp:[24,42],humidity:[40,80],rainfall:[80,200],ph:[5.5,7.5],nitrogen:[40,100],potassium:[60,120],desc:"The king of fruits. Thrives in tropical/subtropical climates with loamy to alluvial soils.",growDays:"100–150 days (fruiting)",yield:"5–15 t/ha",market:"Export potential, high value"},
+  {name:"Sorghum (Jowar)",icon:"🌾",season:["kharif","rabi"],soil:["black","red","loamy","alluvial"],temp:[22,38],humidity:[30,70],rainfall:[40,100],ph:[5.5,7.5],nitrogen:[40,90],potassium:[20,60],desc:"A drought-hardy cereal for dry regions. Excellent for food, fodder, and biofuel.",growDays:"100–130 days",yield:"1.5–3.5 t/ha",market:"Food security, biofuel"},
+  {name:"Pearl Millet (Bajra)",icon:"🌾",season:["kharif"],soil:["sandy","loamy","red","alluvial"],temp:[25,42],humidity:[25,60],rainfall:[25,75],ph:[5.5,7.5],nitrogen:[30,80],potassium:[15,50],desc:"Extremely drought tolerant. Ideal for arid and semi-arid regions with sandy soils.",growDays:"75–95 days",yield:"1–3 t/ha",market:"Growing health food demand"},
+  {name:"Sunflower",icon:"🌻",season:["rabi","zaid","yearround"],soil:["loamy","alluvial","sandy","black"],temp:[18,32],humidity:[40,75],rainfall:[40,100],ph:[6.0,7.5],nitrogen:[60,100],potassium:[30,70],desc:"A short-duration oilseed crop adaptable to a wide range of soils and seasons.",growDays:"80–100 days",yield:"1.5–3 t/ha",market:"Edible oil, margarine"},
+  {name:"Turmeric",icon:"🟡",season:["kharif","yearround"],soil:["loamy","alluvial","clay","red"],temp:[20,35],humidity:[70,90],rainfall:[150,300],ph:[5.5,7.0],nitrogen:[60,100],potassium:[80,120],desc:"A spice crop that loves high humidity, well-distributed rainfall, and loamy soils.",growDays:"200–270 days",yield:"20–30 t/ha",market:"Spice export, pharma"},
+  {name:"Ginger",icon:"🫚",season:["kharif"],soil:["loamy","alluvial","red","laterite"],temp:[20,33],humidity:[70,90],rainfall:[150,300],ph:[5.5,6.5],nitrogen:[40,80],potassium:[80,120],desc:"A rhizome spice needing high rainfall, humidity, and well-drained loamy soils.",growDays:"180–240 days",yield:"15–25 t/ha",market:"Spice & pharma export"},
+  {name:"Lentil (Masoor)",icon:"🟤",season:["rabi"],soil:["loamy","alluvial","clay","silt"],temp:[10,25],humidity:[30,70],rainfall:[20,70],ph:[6.0,8.0],nitrogen:[20,50],potassium:[20,50],desc:"A cool-season pulse crop suited for rabi season in fertile loamy and alluvial soils.",growDays:"80–120 days",yield:"0.8–2 t/ha",market:"Pulse demand, protein"}
+];
+
+/* ── ML SCORING ENGINE ── */
+function gaussianScore(val, lo, hi) {
+  if (val >= lo && val <= hi) return 1.0;
+  const dist  = val < lo ? lo - val : val - hi;
+  const range = hi - lo;
+  return Math.max(0, 1 - dist / (range * 0.6));
+}
+
+function scoreCrop(crop, inp) {
+  const W = {soil:25, season:20, temp:15, humidity:12, rainfall:12, ph:8, nitrogen:5, potassium:3};
+  let score = 0, total = 0;
+  if (inp.soilType) { score += (crop.soil.includes(inp.soilType)?1:0)*W.soil; total+=W.soil; }
+  if (inp.season)   { score += (crop.season.includes(inp.season)?1:0)*W.season; total+=W.season; }
+  [['temp',inp.temperature,crop.temp],['humidity',inp.humidity,crop.humidity],
+   ['rainfall',inp.rainfall,crop.rainfall],['ph',inp.ph,crop.ph],
+   ['nitrogen',inp.nitrogen,crop.nitrogen],['potassium',inp.potassium,crop.potassium]
+  ].forEach(([k,v,r])=>{ if(v!=null){ score+=gaussianScore(v,r[0],r[1])*W[k]; total+=W[k]; } });
+  return total > 0 ? (score/total)*100 : 0;
+}
+
+function rankCrops(inp) {
+  return CROP_DB.map(c=>({...c, score:Math.round(scoreCrop(c,inp))}))
+    .sort((a,b)=>b.score-a.score).slice(0,6);
+}
+
+/* ── CLAUDE AI ADVICE ── */
+async function fetchAIAdvice(locationName, weather, soil, season, topCrops) {
+  const langNote = currentLang==='hi' ? 'Reply in simple Hindi (Devanagari).' :
+                   currentLang==='mr' ? 'Reply in simple Marathi (Devanagari).' :
+                   'Reply in very simple English a village farmer can understand.';
+  const prompt = `You are a helpful agricultural expert for Indian farmers.
+Farmer's location: ${locationName}
+Auto-detected conditions:
+- Temperature: ${weather.temperature}°C, Humidity: ${weather.humidity}%, Monthly rainfall estimate: ${weather.rainfall}mm
+- Soil type: ${soil}, Season: ${season}
+Top ML-recommended crops: ${topCrops.slice(0,3).map(c=>c.name).join(', ')}
+
+Write a warm, simple 3-sentence advisory. Say why the top crop suits their location, give one practical tip, and one market/profit insight.
+${langNote}`;
+  try {
+    const res  = await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
+    const data = await res.json();
+    return data.content?.[0]?.text || fallbackAdvice(topCrops, locationName);
+  } catch { return fallbackAdvice(topCrops, locationName); }
+}
+
+function fallbackAdvice(topCrops, loc) {
+  return `Based on weather and soil conditions detected for ${loc}, ${topCrops[0]?.name} is your best crop this season. Use certified seeds and ensure proper irrigation for maximum yield. This crop has strong market demand and should give you good profit this year.`;
+}
+
+/* ── HELPERS ── */
+function setStatus(msg, isError=false) {
+  const el = document.getElementById('statusMsg');
+  el.textContent = msg;
+  el.className = 'status-msg' + (isError?' error':'');
+}
+
+function typeText(el, text, speed=16) {
+  el.textContent = '';
+  let i = 0;
+  const cur = document.createElement('span');
+  cur.className = 'typing-cursor'; el.appendChild(cur);
+  const iv = setInterval(()=>{ if(i>=text.length){clearInterval(iv);cur.remove();return;} cur.before(text[i++]); }, speed);
+}
+
+/* ── RENDER WEATHER STRIP ── */
+function renderWeatherStrip(weather, locationName) {
+  document.getElementById('weatherStrip').innerHTML = `
+    <div class="weather-card" style="flex:2;min-width:200px;">
+      <span class="wc-icon">📍</span>
+      <div><div class="wc-val" style="font-size:.9rem">${locationName}</div><div class="wc-lbl">${L.detectedLoc}</div></div>
+    </div>
+    <div class="weather-card"><span class="wc-icon">🌡️</span><div><div class="wc-val">${weather.temperature}°C</div><div class="wc-lbl">${L.tempLbl}</div></div></div>
+    <div class="weather-card"><span class="wc-icon">💧</span><div><div class="wc-val">${weather.humidity}%</div><div class="wc-lbl">${L.humidLbl}</div></div></div>
+    <div class="weather-card"><span class="wc-icon">🌧️</span><div><div class="wc-val">${weather.rainfall}mm</div><div class="wc-lbl">${L.rainLbl}</div></div></div>
+    <div class="weather-card"><span class="wc-icon">💨</span><div><div class="wc-val">${weather.wind} km/h</div><div class="wc-lbl">${L.windLbl}</div></div></div>`;
+}
+
+/* ── RENDER CROP CARDS ── */
+function renderCrops(crops) {
+  const grid = document.getElementById('cropsGrid');
+  grid.innerHTML = '';
+  crops.forEach((crop, i) => {
+    const card = document.createElement('div');
+    card.className = 'crop-card';
+    card.style.animation = `fadeUp .5s ${i*0.08}s ease both`;
+    card.innerHTML = `
+      <div class="crop-card-img">${crop.icon}</div>
+      <div class="crop-card-body">
+        <h3>${crop.name}</h3>
+        <div class="crop-score">
+          <div class="score-bar-bg"><div class="score-bar" style="width:0%" id="bar${i}"></div></div>
+          <span class="score-val">${crop.score}%</span>
+        </div>
+        <div class="crop-tags">
+          ${crop.season.map(s=>`<span class="tag">${s}</span>`).join('')}
+          <span class="tag">${crop.growDays}</span>
+        </div>
+        <p>${crop.desc.substring(0,90)}…</p>
+        <button class="btn-learn" onclick="openModal(${CROP_DB.findIndex(c=>c.name===crop.name)},${crop.score})">${L.learnMore}</button>
+      </div>`;
+    grid.appendChild(card);
+    setTimeout(()=>{ const b=document.getElementById(`bar${i}`); if(b) b.style.width=crop.score+'%'; }, 200+i*80);
+  });
+}
+
+/* ── MAIN ACTION ── */
+async function getSuggestions() {
+  if (!selectedLocation) {
+    const q = document.getElementById('locationInput').value.trim();
+    if (!q) { setStatus('Please enter your village or city name first.', true); return; }
+    setStatus(L.searching);
+    const results = await geocodeLocation(q);
+    if (!results.length) { setStatus(L.errorNotFound, true); return; }
+    selectLocation(results[0]);
+  }
+
+  const btn = document.getElementById('suggestBtn');
+  btn.classList.add('loading');
+
+  const lat  = parseFloat(selectedLocation.lat);
+  const lon  = parseFloat(selectedLocation.lon);
+  const locName = (selectedLocation.display_name||'').split(',').slice(0,3).join(', ');
+  const state   = selectedLocation.address?.state || '';
+  const soil    = STATE_SOIL[state] || 'loamy';
+  const season  = getCurrentSeason();
+  const sd      = SOIL_DEFAULTS[soil] || SOIL_DEFAULTS.loamy;
+
+  setStatus(L.fetchingWeather);
+  let weather;
+  try { weather = await fetchWeather(lat, lon); }
+  catch { weather = {temperature:28, humidity:65, rainfall:100, wind:12}; }
+
+  const inputs = {
+    soilType: soil, season,
+    temperature: weather.temperature, humidity: weather.humidity,
+    rainfall: weather.rainfall, ph: sd.ph,
+    nitrogen: sd.nitrogen, potassium: sd.potassium
+  };
+
+  setStatus(L.analysing);
+  const ranked = rankCrops(inputs);
+
+  renderWeatherStrip(weather, locName);
+  renderCrops(ranked);
+
+  const resultsEl = document.getElementById('results-section');
+  resultsEl.classList.add('show');
+  resultsEl.scrollIntoView({behavior:'smooth', block:'start'});
+
+  const adviceEl = document.getElementById('aiAdviceText');
+  adviceEl.textContent = L.analysing;
+  const advice = await fetchAIAdvice(locName, weather, soil, season, ranked);
+  typeText(adviceEl, advice);
+
+  setStatus('');
+  btn.classList.remove('loading');
+}
+
+/* ── MODAL ── */
+function openModal(idx, score) {
+  const c = CROP_DB[idx];
+  document.getElementById('modalIcon').textContent = c.icon;
+  document.getElementById('modalTitle2').textContent = c.name;
+  document.getElementById('modalSubtitle').textContent = `${L.scoreLabel}: ${score}%`;
+  document.getElementById('modalTags').innerHTML =
+    c.season.map(s=>`<span class="tag">${s}</span>`).join('') +
+    c.soil.slice(0,3).map(s=>`<span class="tag">${s} soil</span>`).join('');
+  document.getElementById('modalDetail').innerHTML = `
+    <div class="md-item"><div class="md-label">${L.growLabel}</div><div class="md-val">${c.growDays}</div></div>
+    <div class="md-item"><div class="md-label">${L.yieldLabel}</div><div class="md-val">${c.yield}</div></div>
+    <div class="md-item"><div class="md-label">${L.idealTemp}</div><div class="md-val">${c.temp[0]}–${c.temp[1]} °C</div></div>
+    <div class="md-item"><div class="md-label">${L.rainNeeded}</div><div class="md-val">${c.rainfall[0]}–${c.rainfall[1]} mm</div></div>
+    <div class="md-item"><div class="md-label">${L.phRange}</div><div class="md-val">${c.ph[0]}–${c.ph[1]}</div></div>
+    <div class="md-item"><div class="md-label">${L.market}</div><div class="md-val">${c.market}</div></div>`;
+  document.getElementById('modalDesc').textContent = c.desc;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(e) { if(e.target===document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('show'); }
+function closeModalDirect() { document.getElementById('modalOverlay').classList.remove('show'); }
+document.addEventListener('keydown', e => { if(e.key==='Escape') document.getElementById('modalOverlay').classList.remove('show'); });
+document.addEventListener('click',   e => { if(!e.target.closest('.location-wrap')) hideAC(); });
+</script>
+</body>
+</html>

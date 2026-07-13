@@ -1,0 +1,114 @@
+body {
+  font-family: Arial;
+  background: #eef3ef;
+}
+
+.navbar {
+  padding: 20px;
+  background: #2e7d32;
+  color: white;
+}
+
+.hero {
+  text-align: center;
+  padding: 40px;
+  background: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef');
+  color: white;
+}
+
+.container {
+  display: flex;
+  gap: 30px;
+  padding: 30px;
+}
+
+/* FORM */
+.form-card {
+  width: 250px;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.form-card select, input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+}
+
+/* RESULT */
+.result-panel {
+  flex: 1;
+}
+
+/* WIDGETS */
+.top-widgets {
+  display: flex;
+  gap: 15px;
+}
+
+.widget {
+  background: #4caf50;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+}
+
+/* INFO BOX */
+.info-box {
+  background: white;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+/* BARS */
+.bar {
+  height: 20px;
+  background: linear-gradient(to right, green, yellow);
+  margin: 10px 0;
+  border-radius: 10px;
+}
+
+/* CARDS */
+.cards {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.card {
+  width: 180px;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: 0.3s;
+  position: relative;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card img {
+  width: 100%;
+  height: 120px;
+}
+
+.overlay {
+  position: absolute;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  width: 100%;
+  text-align: center;
+}
+
+button {
+  margin: 5px;
+  padding: 5px;
+}
+
+.hidden {
+  display: none;
+}

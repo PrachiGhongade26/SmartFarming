@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SmartFarming – AI Crop Suggestion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green-dark: #1a3a2a;
+    --green-mid:  #2d6a4f;
+    --green-light:#52b788;
+    --green-pale: #d8f3dc;
+    --amber:      #f4a01c;
+    --amber-dark: #c77d0a;
+    --cream:      #fdf8ef;
+    --text-dark:  #14271d;
+    --text-mid:   #3d5a47;
+    --text-light: #7a9e87;
+    --white:      #ffffff;
+    --shadow:     0 8px 40px rgba(26,58,42,.13);
+    --radius:     18px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw;
+    height: 68px;
+    background: rgba(26,58,42,.96);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 20px rgba(0,0,0,.2);
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem; color: var(--white); font-weight: 700;
+  }
+  .logo-icon {
+    width: 36px; height: 36px; background: var(--amber);
+    border-radius: 10px; display: grid; place-items: center; font-size: 1.1rem;
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    color: rgba(255,255,255,.75); text-decoration: none; font-size: .9rem;
+    font-weight: 500; transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .btn-dashboard {
+    background: var(--amber); color: var(--text-dark);
+    border: none; border-radius: 10px; padding: 9px 22px;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: .9rem;
+    cursor: pointer; transition: background .2s, transform .15s;
+  }
+  .btn-dashboard:hover { background: var(--amber-dark); transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 50%, rgba(82,183,136,.18) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 80% 20%, rgba(244,160,28,.1) 0%, transparent 60%),
+      linear-gradient(165deg, #1a3a2a 0%, #2d6a4f 45%, #52b788 100%);
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 40px;
+    align-items: center;
+    padding: 110px 5vw 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* decorative blobs */
+  .hero::before {
+    content: '';
+    position: absolute; top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: rgba(244,160,28,.08);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -60px; left: 30%;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(82,183,136,.1);
+    pointer-events: none;
+  }
+
+  .hero-left { position: relative; z-index: 2; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(244,160,28,.15);
+    border: 1px solid rgba(244,160,28,.35);
+    color: var(--amber); border-radius: 100px;
+    padding: 5px 14px; font-size: .8rem; font-weight: 600;
+    letter-spacing: .04em; text-transform: uppercase;
+    margin-bottom: 20px;
+    animation: fadeUp .6s ease both;
+  }
+  .hero-tag::before { content: '🌱'; }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.6rem, 5vw, 4rem);
+    color: var(--white); line-height: 1.1;
+    animation: fadeUp .6s .1s ease both;
+  }
+  .hero-title span { color: var(--amber); }
+
+  .hero-sub {
+    color: rgba(255,255,255,.72); font-size: 1.1rem;
+    line-height: 1.6; margin: 18px 0 32px;
+    max-width: 520px;
+    animation: fadeUp .6s .2s ease both;
+  }
+
+  .hero-stats {
+    display: flex; gap: 32px;
+    animation: fadeUp .6s .3s ease both;
+  }
+  .stat { text-align: left; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; color: var(--amber); font-weight: 900;
+  }
+  .stat-lbl { font-size: .78rem; color: rgba(255,255,255,.6); margin-top: 2px; }
+
+  /* floating icons */
+  .float-icons {
+    position: absolute; bottom: 40px; left: 0;
+    display: flex; gap: 14px;
+    animation: fadeUp .6s .4s ease both;
+  }
+  .fi {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: rgba(255,255,255,.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.15);
+    display: grid; place-items: center; font-size: 1.4rem;
+    animation: floatY 3s ease-in-out infinite;
+  }
+  .fi:nth-child(2) { animation-delay: .5s; }
+  .fi:nth-child(3) { animation-delay: 1s; }
+  .fi:nth-child(4) { animation-delay: 1.5s; }
+
+  /* ── FORM CARD ── */
+  .form-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    box-shadow: var(--shadow);
+    position: relative; z-index: 3;
+    animation: slideIn .7s .15s ease both;
+  }
+  .form-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; color: var(--text-dark);
+    margin-bottom: 24px;
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-size: .82rem; font-weight: 600;
+    color: var(--text-mid); margin-bottom: 6px; letter-spacing: .02em;
+  }
+  .form-group input,
+  .form-group select {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid #dce8e0;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: .93rem;
+    color: var(--text-dark);
+    background: #f8fdf9;
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+    appearance: none;
+  }
+  .form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232d6a4f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: var(--green-mid);
+    box-shadow: 0 0 0 3px rgba(45,106,79,.1);
+    background: #fff;
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .btn-suggest {
+    width: 100%; padding: 15px;
+    background: linear-gradient(135deg, var(--amber) 0%, #e8920c 100%);
+    color: var(--text-dark); border: none; border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700;
+    cursor: pointer; margin-top: 8px;
+    transition: transform .15s, box-shadow .2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    box-shadow: 0 4px 20px rgba(244,160,28,.4);
+  }
+  .btn-suggest:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(244,160,28,.5); }
+  .btn-suggest:active { transform: translateY(0); }
+  .btn-suggest.loading { opacity: .75; pointer-events: none; }
+
+  /* spinner */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(0,0,0,.2);
+    border-top-color: var(--text-dark);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    display: none;
+  }
+  .btn-suggest.loading .spinner { display: block; }
+  .btn-suggest.loading .btn-text { display: none; }
+
+  /* ── HOW IT WORKS ── */
+  .section { padding: 80px 5vw; }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem,3vw,2.5rem);
+    color: var(--text-dark); text-align: center; margin-bottom: 10px;
+  }
+  .section-sub { text-align: center; color: var(--text-light); font-size: 1rem; margin-bottom: 52px; }
+
+  .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; }
+  .step {
+    text-align: center; padding: 32px 20px;
+    background: var(--white); border-radius: var(--radius);
+    border: 1.5px solid #e4f0e8;
+    transition: transform .25s, box-shadow .25s;
+    position: relative;
+  }
+  .step:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+  .step-num {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    background: var(--green-mid); color: #fff;
+    width: 28px; height: 28px; border-radius: 50%;
+    display: grid; place-items: center; font-size: .75rem; font-weight: 700;
+  }
+  .step-icon {
+    font-size: 2.4rem; margin-bottom: 14px;
+    display: block;
+  }
+  .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--text-dark); }
+  .step p { font-size: .85rem; color: var(--text-light); line-height: 1.6; }
+
+  /* connector line */
+  .steps-wrap { position: relative; }
+  .steps-wrap::before {
+    content: '';
+    position: absolute; top: 50px; left: calc(12.5% + 24px); right: calc(12.5% + 24px);
+    height: 2px; background: linear-gradient(90deg, var(--green-light), var(--amber));
+    z-index: 0;
+  }
+
+  /* ── RESULTS SECTION ── */
+  #results-section {
+    padding: 0 5vw 80px;
+    display: none;
+  }
+  #results-section.show { display: block; animation: fadeUp .5s ease both; }
+
+  .results-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .results-header h2 {
+    font-family: 'Playfair Display', serif; font-size: 2rem;
+    color: var(--text-dark);
+  }
+  .ai-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--green-pale); border: 1px solid #b7e4c7;
+    color: var(--green-mid); border-radius: 100px;
+    padding: 6px 14px; font-size: .8rem; font-weight: 600;
+  }
+
+  .crops-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-bottom: 32px; }
+
+  .crop-card {
+    border-radius: var(--radius); overflow: hidden;
+    background: var(--white);
+    border: 1.5px solid #e4f0e8;
+    box-shadow: 0 4px 20px rgba(26,58,42,.06);
+    transition: transform .25s, box-shadow .25s;
+    cursor: pointer;
+  }
+  .crop-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+  .crop-card-img {
+    height: 140px; display: flex; align-items: center; justify-content: center;
+    font-size: 4rem;
+    background: linear-gradient(135deg, var(--green-pale) 0%, #b7e4c7 100%);
+  }
+  .crop-card-body { padding: 20px; }
+  .crop-card-body h3 {
+    font-family: 'Playfair Display', serif; font-size: 1.2rem;
+    color: var(--text-dark); margin-bottom: 6px;
+  }
+  .crop-score {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+  }
+  .score-bar-bg {
+    flex: 1; height: 6px; background: #e4f0e8; border-radius: 3px; overflow: hidden;
+  }
+  .score-bar { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--green-light), var(--amber)); transition: width .8s ease; }
+  .score-val { font-size: .78rem; font-weight: 700; color: var(--green-mid); }
+  .crop-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .tag {
+    background: var(--green-pale); color: var(--green-mid);
+    border-radius: 100px; padding: 3px 10px; font-size: .74rem; font-weight: 500;
+  }
+  .crop-card-body p { font-size: .85rem; color: var(--text-light); line-height: 1.6; }
+  .btn-learn {
+    display: inline-block; margin-top: 14px;
+    background: linear-gradient(135deg, var(--amber) 0%, #e8920c 100%);
+    color: var(--text-dark); border: none; border-radius: 8px;
+    padding: 8px 18px; font-size: .85rem; font-weight: 700;
+    cursor: pointer; transition: transform .15s, box-shadow .2s;
+    box-shadow: 0 3px 12px rgba(244,160,28,.3);
+  }
+  .btn-learn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(244,160,28,.4); }
+
+  /* AI Advice Panel */
+  .ai-advice {
+    background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+    border-radius: var(--radius); padding: 32px;
+    color: #fff; position: relative; overflow: hidden;
+  }
+  .ai-advice::before {
+    content: '🤖'; position: absolute; right: 30px; top: 50%;
+    transform: translateY(-50%); font-size: 6rem; opacity: .08;
+  }
+  .ai-advice h3 {
+    font-family: 'Playfair Display', serif; font-size: 1.4rem;
+    margin-bottom: 14px;
+  }
+  .ai-advice p { font-size: .95rem; line-height: 1.75; color: rgba(255,255,255,.85); }
+  .ai-advice .typing-cursor {
+    display: inline-block; width: 2px; height: 1em;
+    background: var(--amber); vertical-align: middle;
+    animation: blink .7s steps(1) infinite;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 999;
+    background: rgba(14,30,20,.7); backdrop-filter: blur(4px);
+    display: none; place-items: center;
+  }
+  .modal-overlay.show { display: grid; }
+  .modal {
+    background: var(--white); border-radius: 24px;
+    padding: 40px; max-width: 560px; width: 90%;
+    position: relative; animation: fadeUp .4s ease;
+  }
+  .modal-close {
+    position: absolute; top: 18px; right: 18px;
+    width: 32px; height: 32px; border-radius: 8px;
+    border: none; background: #f0f0f0; cursor: pointer;
+    font-size: 1rem; display: grid; place-items: center;
+    transition: background .2s;
+  }
+  .modal-close:hover { background: #e0e0e0; }
+  .modal h2 {
+    font-family: 'Playfair Display', serif; font-size: 1.6rem;
+    margin-bottom: 6px;
+  }
+  .modal-icon { font-size: 3.5rem; margin-bottom: 12px; display: block; }
+  .modal-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+  .md-item {
+    background: var(--green-pale); border-radius: 12px; padding: 14px;
+  }
+  .md-item .md-label { font-size: .75rem; color: var(--text-light); font-weight: 600; }
+  .md-item .md-val { font-size: 1rem; font-weight: 700; color: var(--text-dark); margin-top: 3px; }
+  .modal-desc { font-size: .9rem; color: var(--text-mid); line-height: 1.7; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--green-dark); color: rgba(255,255,255,.5);
+    text-align: center; padding: 28px;
+    font-size: .85rem;
+  }
+  footer span { color: var(--amber); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes slideIn { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes floatY { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-8px); } }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
+  @keyframes barGrow { from { width:0; } }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 100px; }
+    .hero-left { text-align: center; }
+    .hero-stats { justify-content: center; }
+    .float-icons { display: none; }
+    .form-card { max-width: 500px; margin: 0 auto; }
+    .steps { grid-template-columns: repeat(2,1fr); }
+    .steps-wrap::before { display: none; }
+    .crops-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media(max-width:600px) {
+    .steps { grid-template-columns: 1fr; }
+    .crops-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .form-row { grid-template-columns: 1fr; }
+    .modal-detail { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-icon">🌿</div>
+    SmartFarming
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html">About</a></li>
+    <li><a href="#">Services</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <a href="dashboard.html">
+    <button class="btn-dashboard">Dashboard</button>
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Smart Agriculture Platform</div>
+    <h1 class="hero-title">AI <span>Crop Suggestion</span><br>for Smart Farming</h1>
+    <p class="hero-sub">Get intelligent, data-driven crop recommendations tailored to your soil type, climate conditions, and local environment — powered by machine learning.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">50+</div><div class="stat-lbl">Crop Varieties</div></div>
+      <div class="stat"><div class="stat-num">98%</div><div class="stat-lbl">Accuracy Rate</div></div>
+      <div class="stat"><div class="stat-num">12K+</div><div class="stat-lbl">Farmers Helped</div></div>
+    </div>
+    <div class="float-icons" style="margin-top:36px;">
+      <div class="fi">🚜</div>
+      <div class="fi">🌾</div>
+      <div class="fi">🤖</div>
+      <div class="fi">📡</div>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="form-card">
+    <h2>Enter Your Farm Details</h2>
+
+    <div class="form-group">
+      <label>Soil Type</label>
+      <select id="soilType">
+        <option value="">Select Soil Type</option>
+        <option value="loamy">Loamy</option>
+        <option value="sandy">Sandy</option>
+        <option value="clay">Clay</option>
+        <option value="silt">Silt</option>
+        <option value="peaty">Peaty</option>
+        <option value="chalky">Chalky</option>
+        <option value="black">Black / Regur</option>
+        <option value="red">Red / Laterite</option>
+        <option value="alluvial">Alluvial</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Temperature (°C)</label>
+        <input type="number" id="temperature" placeholder="e.g. 28" min="-10" max="60"/>
+      </div>
+      <div class="form-group">
+        <label>Humidity (%)</label>
+        <input type="number" id="humidity" placeholder="e.g. 65" min="0" max="100"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Rainfall (mm)</label>
+        <input type="number" id="rainfall" placeholder="e.g. 120" min="0" max="5000"/>
+      </div>
+      <div class="form-group">
+        <label>pH Level</label>
+        <input type="number" id="ph" placeholder="e.g. 6.5" min="0" max="14" step="0.1"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nitrogen (N) kg/ha</label>
+        <input type="number" id="nitrogen" placeholder="e.g. 80" min="0" max="200"/>
+      </div>
+      <div class="form-group">
+        <label>Potassium (K) kg/ha</label>
+        <input type="number" id="potassium" placeholder="e.g. 40" min="0" max="200"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Season</label>
+      <select id="season">
+        <option value="">Select Season</option>
+        <option value="kharif">Kharif (Jun–Oct)</option>
+        <option value="rabi">Rabi (Oct–Mar)</option>
+        <option value="zaid">Zaid (Mar–Jun)</option>
+        <option value="yearround">Year Round</option>
+      </select>
+    </div>
+
+    <button class="btn-suggest" id="suggestBtn" onclick="getSuggestions()">
+      <span class="spinner"></span>
+      <span class="btn-text">🌱 Get AI Crop Suggestions</span>
+    </button>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <h2 class="section-title">How It Works</h2>
+  <p class="section-sub">Our ML model analyses your farm conditions and delivers precise recommendations in seconds.</p>
+  <div class="steps-wrap">
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <span class="step-icon">📋</span>
+        <h3>Input Your Data</h3>
+        <p>Provide soil type, climate, pH, nutrients, and seasonal info about your farm.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <span class="step-icon">🧠</span>
+        <h3>ML Processing</h3>
+        <p>Our weighted scoring model + AI analyses conditions against 50+ crop profiles.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <span class="step-icon">📊</span>
+        <h3>Rank & Filter</h3>
+        <p>Crops are scored and ranked by suitability. Top matches bubble to the surface.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <span class="step-icon">🌾</span>
+        <h3>Get Recommendations</h3>
+        <p>Receive the best crop options with AI insights and farming tips tailored to you.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results-section">
+  <div class="results-header">
+    <h2>Recommended Crops for You</h2>
+    <div class="ai-badge">🤖 AI Analysed</div>
+  </div>
+  <div class="crops-grid" id="cropsGrid"></div>
+  <div class="ai-advice">
+    <h3>🌿 AI Expert Advice</h3>
+    <p id="aiAdviceText"></p>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <span class="modal-icon" id="modalIcon"></span>
+    <h2 id="modalTitle"></h2>
+    <p id="modalSubtitle" style="color:var(--text-light);font-size:.9rem;margin-bottom:4px;"></p>
+    <div class="crop-tags" id="modalTags"></div>
+    <div class="modal-detail" id="modalDetail"></div>
+    <p class="modal-desc" id="modalDesc"></p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 <span>SmartFarming</span> · AI Crop Suggestion Platform · Built for Indian Farmers 🇮🇳</p>
+</footer>
+
+<script>
+/* ======================================================
+   ML CROP DATABASE — 20 major crops with feature profiles
+   ====================================================== */
+const CROP_DB = [
+  {
+    name:"Rice", icon:"🌾", season:["kharif","yearround"],
+    soil:["clay","alluvial","loamy","silt","black"],
+    temp:[20,35], humidity:[60,100], rainfall:[100,300],
+    ph:[5.5,7.0], nitrogen:[60,120], potassium:[20,80],
+    desc:"A staple cereal that thrives in warm, waterlogged conditions. Best suited for delta and flood-prone regions.",
+    growDays:"110–150 days", yield:"4–6 t/ha", market:"High demand, MSP support"
+  },
+  {
+    name:"Wheat", icon:"🌿", season:["rabi"],
+    soil:["loamy","clay","alluvial","silt"],
+    temp:[10,25], humidity:[40,80], rainfall:[30,100],
+    ph:[6.0,7.5], nitrogen:[80,150], potassium:[30,60],
+    desc:"India's primary rabi crop. Grows best in cool, dry weather with fertile, well-drained loamy soils.",
+    growDays:"90–120 days", yield:"3–5 t/ha", market:"Strong MSP, national demand"
+  },
+  {
+    name:"Maize", icon:"🌽", season:["kharif","zaid","yearround"],
+    soil:["loamy","sandy","alluvial","red"],
+    temp:[18,35], humidity:[50,80], rainfall:[60,150],
+    ph:[5.8,7.0], nitrogen:[80,160], potassium:[30,60],
+    desc:"A versatile cereal used for food, feed, and industry. Grows in diverse soils with good drainage.",
+    growDays:"75–100 days", yield:"5–8 t/ha", market:"Growing demand, ethanol sector"
+  },
+  {
+    name:"Soybean", icon:"🫘", season:["kharif"],
+    soil:["loamy","alluvial","black","clay"],
+    temp:[20,32], humidity:[60,85], rainfall:[60,150],
+    ph:[6.0,7.0], nitrogen:[20,80], potassium:[40,80],
+    desc:"An oilseed legume that fixes nitrogen. Ideal for black soils of central India.",
+    growDays:"90–120 days", yield:"1.5–3 t/ha", market:"Oil & protein demand rising"
+  },
+  {
+    name:"Cotton", icon:"🌀", season:["kharif"],
+    soil:["black","alluvial","loamy","red"],
+    temp:[25,40], humidity:[40,75], rainfall:[60,150],
+    ph:[6.0,8.0], nitrogen:[60,120], potassium:[40,80],
+    desc:"A major cash crop grown in dry and semi-arid zones. Black soil (regur) is ideal for water retention.",
+    growDays:"150–180 days", yield:"1.5–4 t/ha", market:"Textile industry, export"
+  },
+  {
+    name:"Sugarcane", icon:"🎋", season:["yearround","kharif"],
+    soil:["alluvial","loamy","clay","black"],
+    temp:[20,38], humidity:[65,90], rainfall:[100,250],
+    ph:[6.0,7.5], nitrogen:[100,200], potassium:[60,120],
+    desc:"A perennial crop requiring deep, fertile soils and ample water. Grown for sugar and ethanol.",
+    growDays:"300–365 days", yield:"60–100 t/ha", market:"Sugar mills, high value"
+  },
+  {
+    name:"Groundnut", icon:"🥜", season:["kharif","zaid"],
+    soil:["sandy","red","loamy","alluvial"],
+    temp:[22,36], humidity:[45,75], rainfall:[50,130],
+    ph:[5.5,7.0], nitrogen:[20,60], potassium:[20,60],
+    desc:"A drought-tolerant oilseed crop suited for sandy and red soils with good drainage.",
+    growDays:"90–130 days", yield:"1.5–3 t/ha", market:"Oil, peanut butter export"
+  },
+  {
+    name:"Chickpea", icon:"🫛", season:["rabi"],
+    soil:["loamy","clay","alluvial","black"],
+    temp:[15,28], humidity:[30,70], rainfall:[25,80],
+    ph:[6.0,8.0], nitrogen:[20,60], potassium:[20,50],
+    desc:"A protein-rich legume suited for cool, dry rabi conditions with minimal rainfall.",
+    growDays:"90–110 days", yield:"1–2.5 t/ha", market:"High protein demand"
+  },
+  {
+    name:"Mustard", icon:"🌼", season:["rabi"],
+    soil:["loamy","alluvial","sandy","silt"],
+    temp:[10,25], humidity:[30,70], rainfall:[20,70],
+    ph:[6.0,7.5], nitrogen:[60,100], potassium:[20,50],
+    desc:"A major rabi oilseed crop preferring cool temperatures and well-drained loamy soil.",
+    growDays:"85–110 days", yield:"1–2 t/ha", market:"Edible oil, exports"
+  },
+  {
+    name:"Tomato", icon:"🍅", season:["rabi","zaid","yearround"],
+    soil:["loamy","alluvial","sandy","silt"],
+    temp:[18,32], humidity:[60,85], rainfall:[40,100],
+    ph:[6.0,7.0], nitrogen:[80,140], potassium:[80,140],
+    desc:"A high-value vegetable crop grown across seasons in well-drained loamy soils.",
+    growDays:"60–90 days", yield:"20–40 t/ha", market:"High value, urban demand"
+  },
+  {
+    name:"Potato", icon:"🥔", season:["rabi","zaid"],
+    soil:["loamy","sandy","alluvial","silt"],
+    temp:[10,25], humidity:[60,85], rainfall:[40,100],
+    ph:[5.0,6.5], nitrogen:[100,180], potassium:[100,160],
+    desc:"A starchy tuber crop grown in cool conditions. Prefers deep, loose, well-drained soils.",
+    growDays:"70–100 days", yield:"20–35 t/ha", market:"Strong urban demand"
+  },
+  {
+    name:"Onion", icon:"🧅", season:["rabi","zaid","yearround"],
+    soil:["loamy","alluvial","clay","silt"],
+    temp:[13,30], humidity:[50,80], rainfall:[30,80],
+    ph:[6.0,7.5], nitrogen:[60,100], potassium:[60,100],
+    desc:"A versatile bulb crop grown across India in varied soils. Prefers dry weather at maturity.",
+    growDays:"90–130 days", yield:"20–30 t/ha", market:"Essential commodity"
+  },
+  {
+    name:"Banana", icon:"🍌", season:["yearround"],
+    soil:["alluvial","loamy","clay","black"],
+    temp:[20,38], humidity:[65,95], rainfall:[100,250],
+    ph:[5.5,7.0], nitrogen:[100,200], potassium:[150,250],
+    desc:"A tropical fruit crop needing warm climate, high humidity, and fertile, well-drained soil.",
+    growDays:"270–365 days", yield:"20–50 t/ha", market:"High domestic consumption"
+  },
+  {
+    name:"Mango", icon:"🥭", season:["zaid","yearround"],
+    soil:["alluvial","loamy","red","laterite"],
+    temp:[24,42], humidity:[40,80], rainfall:[80,200],
+    ph:[5.5,7.5], nitrogen:[40,100], potassium:[60,120],
+    desc:"The king of fruits. Thrives in tropical/subtropical climates with deep, loamy to alluvial soils.",
+    growDays:"100–150 days (fruiting)", yield:"5–15 t/ha", market:"Export potential, high value"
+  },
+  {
+    name:"Sorghum (Jowar)", icon:"🌾", season:["kharif","rabi"],
+    soil:["black","red","loamy","alluvial"],
+    temp:[22,38], humidity:[30,70], rainfall:[40,100],
+    ph:[5.5,7.5], nitrogen:[40,90], potassium:[20,60],
+    desc:"A drought-hardy cereal for dry regions. Excellent for food, fodder, and biofuel.",
+    growDays:"100–130 days", yield:"1.5–3.5 t/ha", market:"Food security, biofuel"
+  },
+  {
+    name:"Pearl Millet (Bajra)", icon:"🌾", season:["kharif"],
+    soil:["sandy","loamy","red","alluvial"],
+    temp:[25,42], humidity:[25,60], rainfall:[25,75],
+    ph:[5.5,7.5], nitrogen:[30,80], potassium:[15,50],
+    desc:"Extremely drought tolerant. Ideal for arid and semi-arid regions with sandy soils.",
+    growDays:"75–95 days", yield:"1–3 t/ha", market:"Growing health food demand"
+  },
+  {
+    name:"Sunflower", icon:"🌻", season:["rabi","zaid","yearround"],
+    soil:["loamy","alluvial","sandy","black"],
+    temp:[18,32], humidity:[40,75], rainfall:[40,100],
+    ph:[6.0,7.5], nitrogen:[60,100], potassium:[30,70],
+    desc:"A short-duration oilseed crop adaptable to a wide range of soils and seasons.",
+    growDays:"80–100 days", yield:"1.5–3 t/ha", market:"Edible oil, margarine"
+  },
+  {
+    name:"Turmeric", icon:"🟡", season:["kharif","yearround"],
+    soil:["loamy","alluvial","clay","red"],
+    temp:[20,35], humidity:[70,90], rainfall:[150,300],
+    ph:[5.5,7.0], nitrogen:[60,100], potassium:[80,120],
+    desc:"A spice crop that loves high humidity, well-distributed rainfall, and loamy soils.",
+    growDays:"200–270 days", yield:"20–30 t/ha", market:"Spice export, pharma"
+  },
+  {
+    name:"Ginger", icon:"🫚", season:["kharif"],
+    soil:["loamy","alluvial","red","laterite"],
+    temp:[20,33], humidity:[70,90], rainfall:[150,300],
+    ph:[5.5,6.5], nitrogen:[40,80], potassium:[80,120],
+    desc:"A rhizome spice needing high rainfall, humidity, and well-drained loamy soils.",
+    growDays:"180–240 days", yield:"15–25 t/ha", market:"Spice & pharma export"
+  },
+  {
+    name:"Lentil (Masoor)", icon:"🟤", season:["rabi"],
+    soil:["loamy","alluvial","clay","silt"],
+    temp:[10,25], humidity:[30,70], rainfall:[20,70],
+    ph:[6.0,8.0], nitrogen:[20,50], potassium:[20,50],
+    desc:"A cool-season pulse crop suited for rabi season in fertile loamy and alluvial soils.",
+    growDays:"80–120 days", yield:"0.8–2 t/ha", market:"Pulse demand, protein"
+  }
+];
+
+/* ======================================================
+   ML SCORING ENGINE — Weighted Gaussian similarity
+   ====================================================== */
+function gaussianScore(val, lo, hi) {
+  if (val < lo || val > hi) {
+    const dist = val < lo ? lo - val : val - hi;
+    const range = hi - lo;
+    return Math.max(0, 1 - (dist / (range * 0.6)));
+  }
+  return 1.0;
+}
+
+function scoreCrop(crop, inputs) {
+  const weights = { soil:25, season:20, temp:15, humidity:12, rainfall:12, ph:8, nitrogen:5, potassium:3 };
+  let score = 0;
+  let total = 0;
+
+  // Soil
+  if (inputs.soilType) {
+    score += (crop.soil.includes(inputs.soilType) ? 1 : 0) * weights.soil;
+    total += weights.soil;
+  }
+  // Season
+  if (inputs.season) {
+    score += (crop.season.includes(inputs.season) ? 1 : 0) * weights.season;
+    total += weights.season;
+  }
+  // Continuous features
+  const features = [
+    ['temp', inputs.temperature, crop.temp],
+    ['humidity', inputs.humidity, crop.humidity],
+    ['rainfall', inputs.rainfall, crop.rainfall],
+    ['ph', inputs.ph, crop.ph],
+    ['nitrogen', inputs.nitrogen, crop.nitrogen],
+    ['potassium', inputs.potassium, crop.potassium],
+  ];
+  features.forEach(([key, val, range]) => {
+    if (val !== null) {
+      score += gaussianScore(val, range[0], range[1]) * weights[key];
+      total += weights[key];
+    }
+  });
+
+  return total > 0 ? (score / total) * 100 : 0;
+}
+
+function parseInputs() {
+  return {
+    soilType: document.getElementById('soilType').value || null,
+    season: document.getElementById('season').value || null,
+    temperature: parseFloat(document.getElementById('temperature').value) || null,
+    humidity: parseFloat(document.getElementById('humidity').value) || null,
+    rainfall: parseFloat(document.getElementById('rainfall').value) || null,
+    ph: parseFloat(document.getElementById('ph').value) || null,
+    nitrogen: parseFloat(document.getElementById('nitrogen').value) || null,
+    potassium: parseFloat(document.getElementById('potassium').value) || null,
+  };
+}
+
+function rankCrops(inputs) {
+  return CROP_DB
+    .map(c => ({ ...c, score: Math.round(scoreCrop(c, inputs)) }))
+    .sort((a,b) => b.score - a.score)
+    .slice(0, 6);
+}
+
+/* ======================================================
+   CLAUDE API — AI Advice generation
+   ====================================================== */
+async function fetchAIAdvice(inputs, topCrops) {
+  const prompt = `You are an expert agronomist for Indian farmers. Given the following farm conditions:
+- Soil Type: ${inputs.soilType || 'Not specified'}
+- Season: ${inputs.season || 'Not specified'}
+- Temperature: ${inputs.temperature || 'Not specified'}°C
+- Humidity: ${inputs.humidity || 'Not specified'}%
+- Rainfall: ${inputs.rainfall || 'Not specified'}mm
+- Soil pH: ${inputs.ph || 'Not specified'}
+- Nitrogen: ${inputs.nitrogen || 'Not specified'} kg/ha
+- Potassium: ${inputs.potassium || 'Not specified'} kg/ha
+
+Top recommended crops by ML model: ${topCrops.slice(0,3).map(c=>c.name).join(', ')}
+
+Write a concise, practical 3-sentence farming advisory for this farmer. Mention why the top crop is suitable, one key growing tip, and one market/profitability insight. Be warm, direct, and professional.`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await response.json();
+    return data.content?.[0]?.text || "Our AI model has analysed your conditions and selected the best crops for you. Follow the recommendations above for optimal yield.";
+  } catch {
+    return `Based on your ${inputs.soilType || 'soil'} conditions and ${inputs.season || 'season'}, ${topCrops[0]?.name} is your top recommendation. Ensure proper irrigation management and use certified seeds for the best yield. With current market trends, this crop promises strong returns this season.`;
+  }
+}
+
+/* ======================================================
+   RENDER RESULTS
+   ====================================================== */
+function renderCrops(crops) {
+  const grid = document.getElementById('cropsGrid');
+  grid.innerHTML = '';
+  crops.forEach((crop, i) => {
+    const card = document.createElement('div');
+    card.className = 'crop-card';
+    card.style.animationDelay = `${i*0.08}s`;
+    card.style.animation = 'fadeUp .5s ease both';
+    card.innerHTML = `
+      <div class="crop-card-img">${crop.icon}</div>
+      <div class="crop-card-body">
+        <h3>${crop.name}</h3>
+        <div class="crop-score">
+          <div class="score-bar-bg"><div class="score-bar" style="width:0%" data-width="${crop.score}%"></div></div>
+          <span class="score-val">${crop.score}%</span>
+        </div>
+        <div class="crop-tags">
+          ${crop.season.map(s=>`<span class="tag">${s}</span>`).join('')}
+          <span class="tag">${crop.growDays}</span>
+        </div>
+        <p>${crop.desc.substring(0,90)}…</p>
+        <button class="btn-learn" onclick="openModal(${CROP_DB.findIndex(c=>c.name===crop.name)}, ${crop.score})">Learn More</button>
+      </div>`;
+    grid.appendChild(card);
+    // Animate bar after paint
+    setTimeout(() => {
+      card.querySelector('.score-bar').style.width = crop.score + '%';
+    }, 100 + i * 80);
+  });
+}
+
+function typeText(el, text, speed=18) {
+  el.textContent = '';
+  let i = 0;
+  const cursor = document.createElement('span');
+  cursor.className = 'typing-cursor';
+  el.appendChild(cursor);
+  const iv = setInterval(() => {
+    if (i >= text.length) { clearInterval(iv); cursor.remove(); return; }
+    cursor.before(text[i++]);
+  }, speed);
+}
+
+/* ======================================================
+   MAIN ACTION
+   ====================================================== */
+async function getSuggestions() {
+  const inputs = parseInputs();
+  // validate at least one input
+  const hasAny = Object.values(inputs).some(v => v !== null);
+  if (!hasAny) {
+    alert('Please enter at least one farm condition to get suggestions.');
+    return;
+  }
+
+  const btn = document.getElementById('suggestBtn');
+  btn.classList.add('loading');
+
+  const ranked = rankCrops(inputs);
+  renderCrops(ranked);
+
+  const resultsEl = document.getElementById('results-section');
+  resultsEl.classList.add('show');
+  resultsEl.scrollIntoView({ behavior:'smooth', block:'start' });
+
+  // Fetch AI advice
+  const adviceEl = document.getElementById('aiAdviceText');
+  adviceEl.textContent = 'Analysing your farm conditions…';
+
+  const advice = await fetchAIAdvice(inputs, ranked);
+  typeText(adviceEl, advice);
+
+  btn.classList.remove('loading');
+}
+
+/* ======================================================
+   MODAL
+   ====================================================== */
+function openModal(idx, score) {
+  const c = CROP_DB[idx];
+  document.getElementById('modalIcon').textContent = c.icon;
+  document.getElementById('modalTitle').textContent = c.name;
+  document.getElementById('modalSubtitle').textContent = `ML Suitability Score: ${score}%`;
+
+  const tags = document.getElementById('modalTags');
+  tags.innerHTML = c.season.map(s=>`<span class="tag">${s}</span>`).join('') +
+    c.soil.slice(0,3).map(s=>`<span class="tag">${s} soil</span>`).join('');
+
+  document.getElementById('modalDetail').innerHTML = `
+    <div class="md-item"><div class="md-label">Growth Duration</div><div class="md-val">${c.growDays}</div></div>
+    <div class="md-item"><div class="md-label">Average Yield</div><div class="md-val">${c.yield}</div></div>
+    <div class="md-item"><div class="md-label">Ideal Temperature</div><div class="md-val">${c.temp[0]}–${c.temp[1]} °C</div></div>
+    <div class="md-item"><div class="md-label">Rainfall Needed</div><div class="md-val">${c.rainfall[0]}–${c.rainfall[1]} mm</div></div>
+    <div class="md-item"><div class="md-label">Soil pH Range</div><div class="md-val">${c.ph[0]}–${c.ph[1]}</div></div>
+    <div class="md-item"><div class="md-label">Market Outlook</div><div class="md-val">${c.market}</div></div>`;
+
+  document.getElementById('modalDesc').textContent = c.desc;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay'))
+    document.getElementById('modalOverlay').classList.remove('show');
+}
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+// Allow Enter key to trigger
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('modalOverlay').classList.remove('show');
+});
+</script>
+</body>
+</html>
